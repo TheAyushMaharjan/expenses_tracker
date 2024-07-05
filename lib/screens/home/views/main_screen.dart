@@ -58,6 +58,32 @@ class MainScreen extends StatelessWidget {
                 ),
               ],
             ),
+            const SizedBox(height: 12),
+            Container(
+              width: MediaQuery.of(context).size.width,
+              height:MediaQuery.of(context).size.width / 2,
+              decoration: BoxDecoration(
+                color: Theme.of(context).colorScheme.primary,
+                borderRadius:BorderRadius.circular(24)
+              ),
+              child: Column(
+                children: [
+                  Text('Total Balance'),
+                  Text('Rs.40000'),
+                  Row(
+                    children: [
+                      Container(
+                        width: 20,
+                        height: 20,
+                        decoration: BoxDecoration(
+                          color: Colors.grey,
+                        ),
+                      )
+                    ],
+                  ),
+                ],
+              ),
+            ),
           ],
         ),
       ),
