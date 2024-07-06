@@ -102,9 +102,11 @@ class MainScreen extends StatelessWidget {
                                 shape: BoxShape.circle,
                               ),
                               child: const Center(
-                                child: Icon(Icons.arrow_downward_rounded,
-                                    size: 12,
-                                  color: Colors.greenAccent,),
+                                child: Icon(
+                                  Icons.arrow_downward_rounded,
+                                  size: 12,
+                                  color: Colors.greenAccent,
+                                ),
                               ),
                             ),
                             const SizedBox(width: 10),
@@ -118,12 +120,13 @@ class MainScreen extends StatelessWidget {
                                     fontSize: 12,
                                   ),
                                 ),
-                                Text('Rs.5000.00',
+                                Text(
+                                  'Rs.5000.00',
                                   style: TextStyle(
-                                  color: Colors.black,
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.bold,
-                                ),
+                                    color: Colors.black,
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold,
+                                  ),
                                 ),
                               ],
                             ),
@@ -140,11 +143,11 @@ class MainScreen extends StatelessWidget {
                                 shape: BoxShape.circle,
                               ),
                               child: const Center(
-                                child: Icon(Icons.arrow_downward_rounded,
-                                    size: 12,
-                                color: Colors.red,
+                                child: Icon(
+                                  Icons.arrow_downward_rounded,
+                                  size: 12,
+                                  color: Colors.red,
                                 ),
-
                               ),
                             ),
                             const SizedBox(width: 10),
@@ -158,7 +161,8 @@ class MainScreen extends StatelessWidget {
                                     fontSize: 12,
                                   ),
                                 ),
-                                Text('Rs.2000.00',
+                                Text(
+                                  'Rs.2000.00',
                                   style: TextStyle(
                                     color: Colors.black,
                                     fontSize: 16,
@@ -185,14 +189,13 @@ class MainScreen extends StatelessWidget {
                   style: TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
-                    color:Colors.black,
+                    color: Colors.black,
                   ),
                 ),
                 Text(
                   "View All",
                   style: TextStyle(
                     fontSize: 16,
-
                     color: Theme.of(context).colorScheme.tertiary,
                   ),
                 ),
@@ -202,32 +205,73 @@ class MainScreen extends StatelessWidget {
             Expanded(
               child: ListView.builder(
                 itemCount: 12,
-                  itemBuilder: (context, int i) {
-              return  Padding(
-                padding: const EdgeInsets.only(bottom: 12.0),
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: Padding(
-                    padding: const EdgeInsets.all(12.0),
-                    child: Row(
-                      children: [
-                        Container(
-                          width: 50,
-                          height: 50,
-                          decoration: const BoxDecoration(
-                            color: Colors.grey,
-                            shape: BoxShape.circle
-                          ),
+                itemBuilder: (context, int i) {
+                  return Padding(
+                    padding: const EdgeInsets.only(bottom: 12.0),
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: Colors.grey.shade300,
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.all(12.0),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Row(
+                              children: [
+                                Stack(
+                                  alignment: Alignment.center,
+                                  children: [
+                                    Container(
+                                      width: 50,
+                                      height: 50,
+                                      decoration: const BoxDecoration(
+                                          color: Color(0xFFE0A9E8),
+                                          shape: BoxShape.circle),
+                                    ),
+                                    Icon(Icons.fastfood,
+                                      color: Theme.of(context).colorScheme.tertiary,
+                                    ),
+                                  ],
+                                ),
+                                const SizedBox(width: 8),
+                                const Text(
+                                  'Food',
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w500,
+                                    color: Colors.black,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            Column(
+                              children: [
+                                const Text(
+                                  '-/Rs.500.00',
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w500,
+                                    color: Colors.black,
+                                  ),
+                                ),
+                                Text(
+                                  'Today',
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                    color:
+                                        Theme.of(context).colorScheme.tertiary,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
                         ),
-                      ],
+                      ),
                     ),
-                  ),
-                ),
-              );
-              },
+                  );
+                },
               ),
             ),
           ],
