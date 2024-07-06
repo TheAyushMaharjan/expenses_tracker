@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:expenses_tracker/data/data.dart';
 
 class MainScreen extends StatelessWidget {
   const MainScreen({super.key});
@@ -204,7 +205,7 @@ class MainScreen extends StatelessWidget {
             const SizedBox(height: 12),
             Expanded(
               child: ListView.builder(
-                itemCount: 12,
+                itemCount: transactionData.length,
                 itemBuilder: (context, int i) {
                   return Padding(
                     padding: const EdgeInsets.only(bottom: 12.0),
@@ -226,19 +227,18 @@ class MainScreen extends StatelessWidget {
                                     Container(
                                       width: 50,
                                       height: 50,
-                                      decoration: const BoxDecoration(
-                                          color: Color(0xFFE0A9E8),
-                                          shape: BoxShape.circle),
+                                      decoration: BoxDecoration(
+                                        color: transactionData[i]['color'],
+                                        shape: BoxShape.circle,
+                                      ),
                                     ),
-                                    Icon(Icons.fastfood,
-                                      color: Theme.of(context).colorScheme.tertiary,
-                                    ),
+                                    transactionData[i]['icon'],
                                   ],
                                 ),
                                 const SizedBox(width: 8),
-                                const Text(
-                                  'Food',
-                                  style: TextStyle(
+                                Text(
+                                  transactionData[i]['name'],
+                                  style: const TextStyle(
                                     fontSize: 14,
                                     fontWeight: FontWeight.w500,
                                     color: Colors.black,
@@ -248,20 +248,19 @@ class MainScreen extends StatelessWidget {
                             ),
                             Column(
                               children: [
-                                const Text(
-                                  '-/Rs.500.00',
-                                  style: TextStyle(
+                                Text(
+                                  transactionData[i]['totalAmount'],
+                                  style: const TextStyle(
                                     fontSize: 14,
                                     fontWeight: FontWeight.w500,
                                     color: Colors.black,
                                   ),
                                 ),
                                 Text(
-                                  'Today',
+                                  transactionData[i]['data'],
                                   style: TextStyle(
                                     fontSize: 14,
-                                    color:
-                                        Theme.of(context).colorScheme.tertiary,
+                                    color: Theme.of(context).colorScheme.tertiary,
                                   ),
                                 ),
                               ],
