@@ -29,7 +29,7 @@ class MainScreen extends StatelessWidget {
                         Icon(Icons.person, color: Colors.grey.shade700),
                       ],
                     ),
-                    SizedBox(width: 12),
+                    const SizedBox(width: 12),
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -40,7 +40,7 @@ class MainScreen extends StatelessWidget {
                             color: Colors.grey.shade700,
                           ),
                         ),
-                        Text(
+                        const Text(
                           'Ayush Maharjan',
                           style: TextStyle(
                             fontWeight: FontWeight.bold,
@@ -76,8 +76,8 @@ class MainScreen extends StatelessWidget {
                       fontSize: 16,
                     ),
                   ),
-                  SizedBox(height: 14),
-                  Text(
+                  const SizedBox(height: 14),
+                  const Text(
                     'Rs.40000.00',
                     style: TextStyle(
                       color: Colors.black,
@@ -97,7 +97,7 @@ class MainScreen extends StatelessWidget {
                             Container(
                               width: 20,
                               height: 20,
-                              decoration: BoxDecoration(
+                              decoration: const BoxDecoration(
                                 color: Color(0xFFD68FE1),
                                 shape: BoxShape.circle,
                               ),
@@ -107,18 +107,18 @@ class MainScreen extends StatelessWidget {
                                   color: Colors.greenAccent,),
                               ),
                             ),
-                            SizedBox(width: 10),
-                            Column(
+                            const SizedBox(width: 10),
+                            const Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                const Text(
+                                Text(
                                   'Income',
                                   style: TextStyle(
                                     color: Color(0xFF4A4A4A),
                                     fontSize: 12,
                                   ),
                                 ),
-                                const Text('Rs.5000.00',
+                                Text('Rs.5000.00',
                                   style: TextStyle(
                                   color: Colors.black,
                                   fontSize: 16,
@@ -135,7 +135,7 @@ class MainScreen extends StatelessWidget {
                             Container(
                               width: 20,
                               height: 20,
-                              decoration: BoxDecoration(
+                              decoration: const BoxDecoration(
                                 color: Color(0xFFD68FE1),
                                 shape: BoxShape.circle,
                               ),
@@ -147,18 +147,18 @@ class MainScreen extends StatelessWidget {
 
                               ),
                             ),
-                            SizedBox(width: 10),
-                            Column(
+                            const SizedBox(width: 10),
+                            const Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                const Text(
+                                Text(
                                   'Expense',
                                   style: TextStyle(
                                     color: Color(0xFF4A4A4A),
                                     fontSize: 12,
                                   ),
                                 ),
-                                const Text('Rs.2000.00',
+                                Text('Rs.2000.00',
                                   style: TextStyle(
                                     color: Colors.black,
                                     fontSize: 16,
@@ -175,12 +175,12 @@ class MainScreen extends StatelessWidget {
                 ],
               ),
             ),
-            SizedBox(height: 24),
+            const SizedBox(height: 24),
             //For Transaction & View All
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(
+                const Text(
                   "Transaction",
                   style: TextStyle(
                     fontSize: 18,
@@ -199,7 +199,37 @@ class MainScreen extends StatelessWidget {
               ],
             ),
             const SizedBox(height: 12),
-
+            Expanded(
+              child: ListView.builder(
+                itemCount: 12,
+                  itemBuilder: (context, int i) {
+              return  Padding(
+                padding: const EdgeInsets.only(bottom: 12.0),
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.all(12.0),
+                    child: Row(
+                      children: [
+                        Container(
+                          width: 50,
+                          height: 50,
+                          decoration: const BoxDecoration(
+                            color: Colors.grey,
+                            shape: BoxShape.circle
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              );
+              },
+              ),
+            ),
           ],
         ),
       ),
