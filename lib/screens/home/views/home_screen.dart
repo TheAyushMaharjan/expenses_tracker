@@ -2,18 +2,28 @@ import 'package:expenses_tracker/screens/home/views/main_screen.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-class HomeScreen extends StatelessWidget {
+import '../../stats/stats.dart';
+
+class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
+  @override
+  State<StatefulWidget> createState()=> _HomeScreenState();
+
+  }
+
+class _HomeScreenState  extends State<HomeScreen>{
+  var widgetList = [
+    const MainScreen(),
+    const StatsScreen(),
+  ];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // appBar: AppBar(),
       bottomNavigationBar: ClipRRect(
-        borderRadius: const BorderRadius.vertical(
-          top: Radius.circular(30)
-        ),
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(30)),
         child: BottomNavigationBar(
+          onTap: (value) {},
           backgroundColor: Colors.white,
           showSelectedLabels: false,
           showUnselectedLabels: false,
@@ -31,11 +41,14 @@ class HomeScreen extends StatelessWidget {
         ),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-      floatingActionButton: FloatingActionButton(onPressed: (){},
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {},
         shape: const CircleBorder(),
-      child: const Icon(CupertinoIcons.add),
+        child: const Icon(CupertinoIcons.add),
       ),
-      body:const MainScreen(),
+      body: const MainScreen(),
     );
   }
+
+
 }
