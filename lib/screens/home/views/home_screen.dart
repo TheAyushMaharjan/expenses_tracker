@@ -35,7 +35,7 @@ class _HomeScreenState  extends State<HomeScreen>{
             ),
             BottomNavigationBarItem(
               icon: Icon(CupertinoIcons.add_circled),
-              label: 'Add',
+              label: 'Expenses',
             ),
           ],
         ),
