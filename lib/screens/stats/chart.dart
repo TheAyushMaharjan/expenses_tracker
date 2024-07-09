@@ -67,48 +67,48 @@ class _MyChartState extends State<MyChart> {
       borderData: FlBorderData(
         show: false,
       ),
-      // barGroups: [
-      //   BarChartGroupData(
-      //     x: 0,
-      //     barRods: [
-      //       BarChartRodData(
-      //         toY: 8,
-      //         color: Colors.lightBlueAccent,
-      //       )
-      //     ],
-      //     showingTooltipIndicators: [0],
-      //   ),
-      //   BarChartGroupData(
-      //     x: 1,
-      //     barRods: [
-      //       BarChartRodData(
-      //         toY: 10,
-      //         color: Colors.lightBlueAccent,
-      //       )
-      //     ],
-      //     showingTooltipIndicators: [0],
-      //   ),
-      //   BarChartGroupData(
-      //     x: 2,
-      //     barRods: [
-      //       BarChartRodData(
-      //         toY: 14,
-      //         color: Colors.lightBlueAccent,
-      //       )
-      //     ],
-      //     showingTooltipIndicators: [0],
-      //   ),
-      //   BarChartGroupData(
-      //     x: 3,
-      //     barRods: [
-      //       BarChartRodData(
-      //         toY: 15,
-      //         color: Colors.lightBlueAccent,
-      //       )
-      //     ],
-      //     showingTooltipIndicators: [0],
-      //   ),
-      // ],
+      barGroups: [
+        BarChartGroupData(
+          x: 0,
+          barRods: [
+            BarChartRodData(
+              toY: 8,
+              color: Colors.lightBlueAccent,
+            )
+          ],
+          showingTooltipIndicators: [0],
+        ),
+        BarChartGroupData(
+          x: 1,
+          barRods: [
+            BarChartRodData(
+              toY: 10,
+              color: Colors.lightBlueAccent,
+            )
+          ],
+          showingTooltipIndicators: [0],
+        ),
+        BarChartGroupData(
+          x: 2,
+          barRods: [
+            BarChartRodData(
+              toY: 14,
+              color: Colors.lightBlueAccent,
+            )
+          ],
+          showingTooltipIndicators: [0],
+        ),
+        BarChartGroupData(
+          x: 3,
+          barRods: [
+            BarChartRodData(
+              toY: 15,
+              color: Colors.lightBlueAccent,
+            )
+          ],
+          showingTooltipIndicators: [0],
+        ),
+      ],
     );
   }
 }
