@@ -16,6 +16,7 @@ class _HomeScreenState  extends State<HomeScreen>{
     const MainScreen(),
     const StatsScreen(),
   ];
+int index = 0;
 
   @override
   Widget build(BuildContext context) {
@@ -23,7 +24,11 @@ class _HomeScreenState  extends State<HomeScreen>{
       bottomNavigationBar: ClipRRect(
         borderRadius: const BorderRadius.vertical(top: Radius.circular(30)),
         child: BottomNavigationBar(
-          onTap: (value) {},
+          onTap: (value) {
+            setState(() {
+              index = value;
+            });
+          },
           backgroundColor: Colors.white,
           showSelectedLabels: false,
           showUnselectedLabels: false,
@@ -46,7 +51,9 @@ class _HomeScreenState  extends State<HomeScreen>{
         shape: const CircleBorder(),
         child: const Icon(CupertinoIcons.add),
       ),
-      body: const MainScreen(),
+      body: index == 0
+        ? MainScreen()
+      : StatsScreen()
     );
   }
 
