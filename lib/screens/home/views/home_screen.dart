@@ -53,8 +53,8 @@ int index = 0;
         child: const Icon(CupertinoIcons.add),
       ),
       body: index == 0
-        ? MainScreen()
-      : StatsScreen()
+        ? const MainScreen()
+      : const StatsScreen()
     );
   }
 

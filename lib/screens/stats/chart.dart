@@ -13,7 +13,7 @@ class _MyChartState extends State<MyChart> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('My Chart'),
+        title: const Text('My Chart'),
       ),
       body: Padding(
         padding: const EdgeInsets.all(8.0),
@@ -31,7 +31,7 @@ class _MyChartState extends State<MyChart> {
       barTouchData: BarTouchData(enabled: false),
       titlesData: FlTitlesData(
         show: true,
-        rightTitles: AxisTitles(
+        rightTitles: const AxisTitles(
           sideTitles: SideTitles(showTitles: false),
         ),
         bottomTitles: AxisTitles(
@@ -40,15 +40,15 @@ class _MyChartState extends State<MyChart> {
             getTitlesWidget: (value, meta) {
               switch (value.toInt()) {
                 case 0:
-                  return Text('One');
+                  return const Text('One');
                 case 1:
-                  return Text('Two');
+                  return const Text('Two');
                 case 2:
-                  return Text('Three');
+                  return const Text('Three');
                 case 3:
-                  return Text('Four');
+                  return const Text('Four');
                 default:
-                  return Text('');
+                  return const Text('');
               }
             },
             reservedSize: 28,
