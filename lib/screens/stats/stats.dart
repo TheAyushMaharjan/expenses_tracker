@@ -11,7 +11,7 @@ class StatsScreen extends StatelessWidget {
         padding: const EdgeInsets.symmetric(vertical: 24.0, horizontal: 24.0),
         child: Column(
           children: [
-            Text('Transaction',
+            const Text('Transaction',
               style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
@@ -19,8 +19,8 @@ class StatsScreen extends StatelessWidget {
               ),
 
             ),
-            SizedBox(height: 10),
-            Container(
+            const SizedBox(height: 10),
+            SizedBox(
               width: MediaQuery.of(context).size.width,
               height: MediaQuery.of(context).size.width,
               // color: Colors.red,
