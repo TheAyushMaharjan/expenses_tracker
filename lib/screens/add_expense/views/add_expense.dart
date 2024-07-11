@@ -7,9 +7,9 @@ class AddExpense extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Add Expenses'),
+        title: const Text('Add Expenses'),
       ),
-      body: Column(
+      body: const Column(
         children: [],
       ),
     );
