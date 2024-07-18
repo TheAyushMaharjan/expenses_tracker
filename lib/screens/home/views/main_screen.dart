@@ -42,7 +42,7 @@ class MainScreen extends StatelessWidget {
                           ),
                         ),
                         const Text(
-                          'Ayush ',
+                          'Ayush Maharjan',
                           style: TextStyle(
                             fontWeight: FontWeight.bold,
                             color: Colors.black,
