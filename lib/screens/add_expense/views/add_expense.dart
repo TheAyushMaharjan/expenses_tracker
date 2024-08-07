@@ -53,12 +53,92 @@ class AddExpense extends StatelessWidget {
               ),
 
               SizedBox(height: 16.0),
-              TextFormField(),
+              
+              //catagory textfield
+              
+              TextFormField(
+                decoration: InputDecoration(
+                  fillColor: Colors.white,
+                  filled: true,
+                  prefixIcon: Icon(Icons.list_alt_rounded,
+                    color:  Colors.grey[600],
+                  ),
+                  contentPadding: EdgeInsets.symmetric(vertical: 16.0, horizontal: 20.0),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(30),
+                    borderSide: BorderSide.none,
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(30),
+                    borderSide: BorderSide(color: Colors.grey[300]!),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(30),
+                    borderSide: BorderSide(color: Colors.blue),
+                  ),
+                  hintText: 'Catagory',
+                  hintStyle: TextStyle(color: Colors.grey[400]),
+                ),
+                style: TextStyle(
+                  fontSize: 16.0,
+                  color: Colors.black,
+                ),
+              ),
               SizedBox(height: 16.0),
-              TextFormField(),
-              SizedBox(height: 16.0),
-              TextButton(onPressed: (){}, child: Text("Save")),
-            ],
+              //date textfield
+              TextFormField(
+                onTap: (){
+                  showDatePicker(
+                    context: context,
+                    initialDate: DateTime.now(),
+                    firstDate: DateTime.now(),
+                    lastDate: DateTime.now().add(Duration(days: 365)),
+                  );
+
+                },
+                decoration: InputDecoration(
+                  fillColor: Colors.white,
+                  filled: true,
+                  prefixIcon: Icon(Icons.date_range_rounded,
+                    color:  Colors.grey[600],
+                  ),
+                  contentPadding: EdgeInsets.symmetric(vertical: 16.0, horizontal: 20.0),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(30),
+                    borderSide: BorderSide.none,
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(30),
+                    borderSide: BorderSide(color: Colors.grey[300]!),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(30),
+                    borderSide: BorderSide(color: Colors.blue),
+                  ),
+                  hintText: 'Date',
+                  hintStyle: TextStyle(color: Colors.grey[400]),
+                ),
+                style: TextStyle(
+                  fontSize: 16.0,
+                  color: Colors.black,
+                ),
+              ),               SizedBox(height: 16.0),
+              CupertinoButton(
+                color: Colors.blue,
+                borderRadius: BorderRadius.circular(30),
+                padding: EdgeInsets.symmetric(vertical: 14.0, horizontal: 28.0),
+                onPressed: () {
+                  // Your onPressed function
+                },
+                child: Text(
+                  "Save",
+                  style: TextStyle(
+                    fontSize: 16.0,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                  ),
+                ),
+              ),            ],
           ),
         ),
       ),
