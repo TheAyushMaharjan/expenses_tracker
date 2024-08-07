@@ -9,7 +9,7 @@ const List<Map<String, dynamic>> transactionData = [
     'data': 'Today',
   },
   {
-    'icon': Icon(Icons.shopping_bag, color: Colors.white),
+    'icon': Icon(Icons.shopping_cart, color: Colors.white),
     'color': Colors.red,
     'name': 'Shopping',
     'totalAmount': '-/Rs.5000.00',
