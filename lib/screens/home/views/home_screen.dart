@@ -3,6 +3,7 @@ import 'package:expenses_tracker/screens/home/views/main_screen.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
+import '../../stats/chart.dart';
 import '../../stats/stats.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -16,7 +17,7 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   var widgetList = [
     const MainScreen(),
-    const StatsScreen(),
+    const PieChartScreen(),
   ];
   int index = 0;
 
@@ -62,7 +63,7 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
         body: index == 0
             ? const MainScreen()
-            : const StatsScreen()
+            : const PieChartScreen()
     );
   }
 

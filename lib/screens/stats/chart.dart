@@ -1,120 +1,214 @@
 import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:fl_chart/fl_chart.dart';
 
-class MyChart extends StatefulWidget {
-  const MyChart({super.key});
+class PieChartScreen extends StatefulWidget {
+  const PieChartScreen({Key? key}) : super(key: key);
 
   @override
-  State<MyChart> createState() => _MyChartState();
+  _PieChartScreenState createState() => _PieChartScreenState();
 }
 
-class _MyChartState extends State<MyChart> {
+class _PieChartScreenState extends State<PieChartScreen> {
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+
+  String? userId; // Current user ID
+  double totalIncome = 0;
+  double totalExpense = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchUserId();
+  }
+
+  void _fetchUserId() {
+    final User? user = _auth.currentUser;
+    if (user != null) {
+      setState(() {
+        userId = user.uid;
+      });
+      _fetchData();
+    } else {
+      debugPrint('No user is logged in.');
+    }
+  }
+
+  Future<void> _fetchData() async {
+    if (userId == null) return;
+
+    try {
+      final incomeQuery = await _firestore
+          .collection('income')
+          .where('userId', isEqualTo: userId)
+          .get();
+      final expenseQuery = await _firestore
+          .collection('expenses')
+          .where('userId', isEqualTo: userId)
+          .get();
+
+      double incomeSum = 0;
+      for (var doc in incomeQuery.docs) {
+        incomeSum += (doc['amount'] as num).toDouble();
+      }
+
+      double expenseSum = 0;
+      for (var doc in expenseQuery.docs) {
+        expenseSum += (doc['amount'] as num).toDouble();
+      }
+
+      setState(() {
+        totalIncome = incomeSum;
+        totalExpense = expenseSum;
+      });
+    } catch (e) {
+      debugPrint('Error fetching data: $e');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('My Chart'),
+        title: const Text("Income vs Expense"),
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: BarChart(
-          mainBarChart(),
-        ),
+      body: userId == null
+          ? const Center(child: CircularProgressIndicator())
+          : totalIncome == 0 && totalExpense == 0
+          ? const Center(child: CircularProgressIndicator())
+          : Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          const Text(
+            "Income vs Expense",
+            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+          ),
+          const SizedBox(height: 20),
+          SizedBox(
+            height: 300,
+            width: 300,
+            child: PieChart(
+              PieChartData(
+                sections: _generatePieChartSections(),
+                centerSpaceRadius: 50,
+                borderData: FlBorderData(show: false),
+              ),
+            ),
+          ),
+          const SizedBox(height: 20),
+          Text(
+            "Total Income: \Rs. ${totalIncome.toStringAsFixed(2)}",
+            style: const TextStyle(fontSize: 16),
+          ),
+          Text(
+            "Total Expense: \Rs. ${totalExpense.toStringAsFixed(2)}",
+            style: const TextStyle(fontSize: 16),
+          ),
+          const SizedBox(height: 20),
+          Expanded(
+            child: FutureBuilder(
+              future: _fetchNotes(),
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const Center(child: CircularProgressIndicator());
+                } else if (snapshot.hasError) {
+                  return Center(child: Text("Error: ${snapshot.error}"));
+                } else if (!snapshot.hasData || (snapshot.data as List).isEmpty) {
+                  return const Center(child: Text("No notes found."));
+                }
+
+                final notes = snapshot.data as List<Map<String, dynamic>>;
+                return ListView.builder(
+                  itemCount: notes.length,
+                  itemBuilder: (context, index) {
+                    final note = notes[index];
+                    final isIncome = note['type'] == 'income';
+                    return ListTile(
+                      tileColor: isIncome ? Colors.green[50] : Colors.red[50],
+                      title: Text(
+                        note['note'],
+                        style: TextStyle(color: isIncome ? Colors.green : Colors.red),
+                      ),
+                      subtitle: Text(
+                          "Category: ${note['category']}\nAmount: \Rs. ${note['amount'].toStringAsFixed(2)}"),
+                    );
+                  },
+                );
+              },
+            ),
+          ),
+        ],
       ),
     );
   }
 
-  BarChartData mainBarChart() {
-    return BarChartData(
-      alignment: BarChartAlignment.spaceAround,
-      maxY: 20,
-      barTouchData: BarTouchData(enabled: false),
-      titlesData: FlTitlesData(
-        show: true,
-        rightTitles: const AxisTitles(
-          sideTitles: SideTitles(showTitles: false),
-        ),
-        bottomTitles: AxisTitles(
-          sideTitles: SideTitles(
-            showTitles: true,
-            getTitlesWidget: (value, meta) {
-              switch (value.toInt()) {
-                case 0:
-                  return const Text('One');
-                case 1:
-                  return const Text('Two');
-                case 2:
-                  return const Text('Three');
-                case 3:
-                  return const Text('Four');
-                default:
-                  return const Text('');
-              }
-            },
-            reservedSize: 28,
-          ),
-        ),
-        leftTitles: AxisTitles(
-          sideTitles: SideTitles(
-            showTitles: true,
-            reservedSize: 28,
-            getTitlesWidget: (value, meta) {
-              return Text(value.toInt().toString());
-            },
-          ),
-        ),
-      ),
-      borderData: FlBorderData(
-        show: false,
-      ),
-      barGroups: [
-        BarChartGroupData(
-          x: 0,
-          barRods: [
-            BarChartRodData(
-              toY: 8,
-              color: Colors.lightBlueAccent,
-            )
-          ],
-          showingTooltipIndicators: [0],
-        ),
-        BarChartGroupData(
-          x: 1,
-          barRods: [
-            BarChartRodData(
-              toY: 10,
-              color: Colors.lightBlueAccent,
-            )
-          ],
-          showingTooltipIndicators: [0],
-        ),
-        BarChartGroupData(
-          x: 2,
-          barRods: [
-            BarChartRodData(
-              toY: 14,
-              color: Colors.lightBlueAccent,
-            )
-          ],
-          showingTooltipIndicators: [0],
-        ),
-        BarChartGroupData(
-          x: 3,
-          barRods: [
-            BarChartRodData(
-              toY: 15,
-              color: Colors.lightBlueAccent,
-            )
-          ],
-          showingTooltipIndicators: [0],
-        ),
-      ],
-    );
-  }
-}
+  Future<List<Map<String, dynamic>>> _fetchNotes() async {
+    if (userId == null) return [];
 
-void main() {
-  runApp(const MaterialApp(
-    home: MyChart(),
-  ));
+    List<Map<String, dynamic>> notes = [];
+
+    try {
+      final incomeQuery = await _firestore
+          .collection('income')
+          .where('userId', isEqualTo: userId)
+          .get();
+      final expenseQuery = await _firestore
+          .collection('expenses')
+          .where('userId', isEqualTo: userId)
+          .get();
+
+      for (var doc in incomeQuery.docs) {
+        notes.add({
+          'note': doc['note'],
+          'amount': (doc['amount'] as num).toDouble(),
+          'category': doc['category'],
+          'type': 'income',
+        });
+      }
+      for (var doc in expenseQuery.docs) {
+        notes.add({
+          'note': doc['note'],
+          'amount': (doc['amount'] as num).toDouble(),
+          'category': doc['category'],
+          'type': 'expense',
+        });
+      }
+    } catch (e) {
+      debugPrint('Error fetching notes: $e');
+    }
+
+    return notes;
+  }
+
+  List<PieChartSectionData> _generatePieChartSections() {
+    final total = totalIncome + totalExpense;
+    if (total == 0) return [];
+
+    return [
+      PieChartSectionData(
+        color: Colors.green,
+        value: totalIncome,
+        title: "${((totalIncome / total) * 100).toStringAsFixed(1)}%",
+        radius: 80,
+        titleStyle: const TextStyle(
+          fontSize: 16,
+          fontWeight: FontWeight.bold,
+          color: Colors.white,
+        ),
+      ),
+      PieChartSectionData(
+        color: Colors.red,
+        value: totalExpense,
+        title: "${((totalExpense / total) * 100).toStringAsFixed(1)}%",
+        radius: 80,
+        titleStyle: const TextStyle(
+          fontSize: 16,
+          fontWeight: FontWeight.bold,
+          color: Colors.white,
+        ),
+      ),
+    ];
+  }
 }
