@@ -1,6 +1,8 @@
+import 'package:expenses_tracker/screens/home/views/profile.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:get/get.dart';
 
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key});
@@ -164,7 +166,9 @@ class _MainScreenState extends State<MainScreen> {
                           ],
                         ),
                         IconButton(
-                          onPressed: () {},
+                          onPressed: () {
+                            Get.to(() => ProfileScreen());
+                          },
                           icon:
                           const Icon(Icons.settings, color: Colors.grey),
                         ),
