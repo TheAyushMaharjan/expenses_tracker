@@ -1,3 +1,5 @@
+import 'package:expenses_tracker/screens/home/views/home_screen.dart';
+import 'package:expenses_tracker/screens/home/views/main_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -72,8 +74,17 @@ class _PieChartScreenState extends State<PieChartScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Income vs Expense"),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => const HomeScreen()),
+            );
+          },
+        ),
       ),
+
       body: userId == null
           ? const Center(child: CircularProgressIndicator())
           : totalIncome == 0 && totalExpense == 0
@@ -81,11 +92,12 @@ class _PieChartScreenState extends State<PieChartScreen> {
           : Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
+
           const Text(
+
             "Income vs Expense",
-            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+            style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
           ),
-          const SizedBox(height: 20),
           SizedBox(
             height: 300,
             width: 300,
@@ -100,14 +112,11 @@ class _PieChartScreenState extends State<PieChartScreen> {
           const SizedBox(height: 20),
           Text(
             "Total Income: \Rs. ${totalIncome.toStringAsFixed(2)}",
-            style: const TextStyle(fontSize: 16,
-            color: Colors.green),
-
+            style: const TextStyle(fontSize: 16, color: Colors.green),
           ),
           Text(
             "Total Expense: \Rs. ${totalExpense.toStringAsFixed(2)}",
-            style: const TextStyle(fontSize: 16,
-                color: Colors.red),
+            style: const TextStyle(fontSize: 16, color: Colors.red),
           ),
           const SizedBox(height: 20),
           Expanded(

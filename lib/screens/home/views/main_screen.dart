@@ -307,13 +307,25 @@ class _MainScreenState extends State<MainScreen> {
                             fontSize: 12,
                           ),
                         ),
-                        const Text(
-                          'Debit/Credit',
-                          style: TextStyle(
-                            color: Colors.black,
-                            fontSize: 12,
-                          ),
+                        Row(
+                          children: [
+                            const Text(
+                              'Credit/',
+                              style: TextStyle(
+                                color: Colors.green,
+                                fontSize: 12,
+                              ),
+                            ),
+                            const Text(
+                              'Debit',
+                              style: TextStyle(
+                                color: Colors.red,
+                                fontSize: 12,
+                              ),
+                            ),
+                          ],
                         ),
+
                       ],
                     ),
                     // Transaction List with Swipe-to-Delete

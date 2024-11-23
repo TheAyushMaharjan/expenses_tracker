@@ -278,9 +278,8 @@ class _AddExpenseState extends State<AddExpense> {
                     );
                     if (picked != null) {
                       setState(() {
-                        dateController.text =
-                            DateFormat('yyyy/MM/dd').format(picked);
-                        selectDate = picked;
+                        selectDate = picked; // Update the DateTime object
+                        dateController.text = DateFormat('yyyy/MM/dd').format(picked); // Update the display format
                       });
                     }
                   },

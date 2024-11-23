@@ -17,13 +17,14 @@ class _SearchScreenState extends State<SearchScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Search Expenses by Date'),
-        backgroundColor: Colors.blue,
       ),
       body: Padding(
         padding: const EdgeInsets.all(8.0),
         child: Column(
           children: [
+            Text( "Search Using Date ",
+              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),),
+            const SizedBox(height: 32),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
@@ -126,12 +127,13 @@ class _SearchScreenState extends State<SearchScreen> {
       Timestamp startTimestamp = Timestamp.fromDate(_startDate!);
       Timestamp endTimestamp = Timestamp.fromDate(_endDate!);
 
-      // Query Firestore
+      // Query Firestore for expenses
       QuerySnapshot snapshot = await FirebaseFirestore.instance
-          .collection('expenses')
+          .collection('expenses') // Query 'expenses' collection
           .where('userId', isEqualTo: user.uid)
-          .where('date', isGreaterThanOrEqualTo: startTimestamp)
-          .where('date', isLessThanOrEqualTo: endTimestamp)
+          .where('createdAt', isGreaterThanOrEqualTo: startTimestamp)
+          .where('createdAt', isLessThanOrEqualTo: endTimestamp)
+          .orderBy('createdAt', descending: true)
           .get();
 
       // Map the results
@@ -139,7 +141,7 @@ class _SearchScreenState extends State<SearchScreen> {
         return {
           'amount': doc['amount'],
           'note': doc['note'],
-          'date': doc['date'].toDate(), // Convert Firestore Timestamp to DateTime
+          'date': doc['createdAt'].toDate(), // Convert Timestamp to DateTime
           'category': doc['category'],
         };
       }).toList();
@@ -153,4 +155,5 @@ class _SearchScreenState extends State<SearchScreen> {
       );
     }
   }
+
 }
