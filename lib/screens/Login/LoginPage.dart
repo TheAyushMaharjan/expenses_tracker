@@ -158,13 +158,13 @@ class _LoginPageState extends State<LoginPage> {
                         labelStyle: TextStyle(color: Colors.black.withOpacity(0.7)), // Semi-black label color
                         prefixIcon: Icon(Icons.lock),
                         border: OutlineInputBorder(
-                          borderSide: BorderSide(color: Colors.black),
+                          borderSide: BorderSide(color: Colors.black), 
                         ),
                         enabledBorder: OutlineInputBorder(
-                          borderSide: BorderSide(color: Colors.black),
+                          borderSide: BorderSide(color: Colors.black), 
                         ),
                         focusedBorder: OutlineInputBorder(
-                          borderSide: BorderSide(color: Colors.black),
+                          borderSide: BorderSide(color: Colors.black), 
                         ),
                         filled: true, // Ensures background color is applied
                         fillColor: Colors.white, // White background

@@ -73,7 +73,6 @@ class _MainScreenState extends State<MainScreen> {
       );
     }
   }
-
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -303,7 +302,6 @@ class _MainScreenState extends State<MainScreen> {
                         ),
                       ],
                     ),
-
                     // Transaction List with Swipe-to-Delete
                     ...selectedDetails.map(
                           (transaction) => Dismissible(
@@ -413,7 +411,6 @@ class _MainScreenState extends State<MainScreen> {
       ),
     );
   }
-
 
   Widget _buildTabButton(int index, String label) {
     return GestureDetector(
