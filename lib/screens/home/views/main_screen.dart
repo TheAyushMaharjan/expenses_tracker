@@ -35,10 +35,18 @@ class _MainScreenState extends State<MainScreen> {
     return total;
   }
 
-  Future<List<Map<String, dynamic>>> getTransactionDetails(
-      String collection) async {
-    QuerySnapshot snapshot =
-    await FirebaseFirestore.instance.collection(collection).get();
+  Future<List<Map<String, dynamic>>> getTransactionDetails(String collection) async {
+    String userId = FirebaseAuth.instance.currentUser?.uid ?? '';
+
+    // Ensure that the user is authenticated
+    if (userId.isEmpty) {
+      throw Exception('User not authenticated');
+    }
+
+    QuerySnapshot snapshot = await FirebaseFirestore.instance
+        .collection(collection)
+        .where('userId', isEqualTo: userId) // Filter transactions by the current user's ID
+        .get();
 
     List<Map<String, dynamic>> transactions = snapshot.docs
         .map((doc) => {
@@ -60,6 +68,7 @@ class _MainScreenState extends State<MainScreen> {
 
     return transactions;
   }
+
 
   Future<void> deleteTransaction(String collection, String docId) async {
     try {

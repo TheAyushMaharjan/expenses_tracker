@@ -17,13 +17,16 @@ class _SearchScreenState extends State<SearchScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        title: const Text('Search'),
       ),
       body: Padding(
         padding: const EdgeInsets.all(8.0),
         child: Column(
           children: [
-            Text( "Search Using Date ",
-              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),),
+            Text(
+              "Search Using Date",
+              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+            ),
             const SizedBox(height: 32),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -32,14 +35,18 @@ class _SearchScreenState extends State<SearchScreen> {
                 ElevatedButton(
                   onPressed: () => _selectStartDate(context),
                   child: Text(
-                    _startDate == null ? 'Select Start Date' : 'Start: ${_formatDate(_startDate!)}',
+                    _startDate == null
+                        ? 'Select Start Date'
+                        : 'Start: ${_formatDate(_startDate!)}',
                   ),
                 ),
                 // End Date Selector
                 ElevatedButton(
                   onPressed: () => _selectEndDate(context),
                   child: Text(
-                    _endDate == null ? 'Select End Date' : 'End: ${_formatDate(_endDate!)}',
+                    _endDate == null
+                        ? 'Select End Date'
+                        : 'End: ${_formatDate(_endDate!)}',
                   ),
                 ),
               ],
@@ -51,7 +58,9 @@ class _SearchScreenState extends State<SearchScreen> {
             ),
             const SizedBox(height: 20),
             Expanded(
-              child: ListView.builder(
+              child: _filteredExpenses.isEmpty
+                  ? const Center(child: Text("No results found."))
+                  : ListView.builder(
                 itemCount: _filteredExpenses.length,
                 itemBuilder: (context, index) {
                   var expense = _filteredExpenses[index];
@@ -123,9 +132,15 @@ class _SearchScreenState extends State<SearchScreen> {
         return;
       }
 
-      // Convert dates to Firestore Timestamps
-      Timestamp startTimestamp = Timestamp.fromDate(_startDate!);
-      Timestamp endTimestamp = Timestamp.fromDate(_endDate!);
+      // Adjust the start and end dates to cover the entire day
+      DateTime adjustedStartDate = DateTime(_startDate!.year, _startDate!.month, _startDate!.day, 0, 0, 0);
+      DateTime adjustedEndDate = DateTime(_endDate!.year, _endDate!.month, _endDate!.day, 23, 59, 59);
+
+      Timestamp startTimestamp = Timestamp.fromDate(adjustedStartDate);
+      Timestamp endTimestamp = Timestamp.fromDate(adjustedEndDate);
+
+      print("Adjusted Start Date: ${_formatDate(adjustedStartDate)} (Timestamp: $startTimestamp)");
+      print("Adjusted End Date: ${_formatDate(adjustedEndDate)} (Timestamp: $endTimestamp)");
 
       // Query Firestore for expenses
       QuerySnapshot snapshot = await FirebaseFirestore.instance
@@ -135,6 +150,10 @@ class _SearchScreenState extends State<SearchScreen> {
           .where('createdAt', isLessThanOrEqualTo: endTimestamp)
           .orderBy('createdAt', descending: true)
           .get();
+
+      if (snapshot.docs.isEmpty) {
+        print("No expenses found for the selected dates.");
+      }
 
       // Map the results
       List<Map<String, dynamic>> expenses = snapshot.docs.map((doc) {
@@ -154,6 +173,40 @@ class _SearchScreenState extends State<SearchScreen> {
         SnackBar(content: Text("Error fetching results: $e")),
       );
     }
+
+// In the ListView.builder, apply the style to the category
+    Expanded(
+      child: ListView.builder(
+        itemCount: _filteredExpenses.length,
+        itemBuilder: (context, index) {
+          var expense = _filteredExpenses[index];
+          return ListTile(
+            title: Text(expense['note']),
+            subtitle: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Amount: Rs. ${expense['amount']}',
+                  style: TextStyle(fontSize: 14),
+                ),
+                Text(
+                  'Category: ${expense['category']}',
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold, // Bold
+                    fontSize: 16, // Font size 16
+                  ),
+                ),
+                Text(
+                  'Date: ${_formatDate(expense['date'])}',
+                  style: TextStyle(fontSize: 14),
+                ),
+              ],
+            ),
+          );
+        },
+      ),
+    );
+
   }
 
 }
