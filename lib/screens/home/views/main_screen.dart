@@ -79,47 +79,49 @@ class _MainScreenState extends State<MainScreen> {
     return SafeArea(
       child: Padding(
         padding: const EdgeInsets.symmetric(vertical: 24.0, horizontal: 24.0),
-        child: FutureBuilder(
-          future: Future.wait([
-            getUserData(),
-            getTotalAmount('income'),
-            getTotalAmount('expenses'),
-            getTransactionDetails('income'),
-            getTransactionDetails('expenses')
-          ]),
-          builder: (context, AsyncSnapshot<List<dynamic>> snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return const Center(child: CircularProgressIndicator());
-            } else if (snapshot.hasError) {
-              return Center(child: Text('Error: ${snapshot.error}'));
-            } else if (snapshot.hasData) {
-              var userData = snapshot.data![0] as Map<String, dynamic>;
-              double incomeTotal = snapshot.data![1] as double;
-              double expenseTotal = snapshot.data![2] as double;
-              List<Map<String, dynamic>> incomeDetails =
-              snapshot.data![3] as List<Map<String, dynamic>>;
-              List<Map<String, dynamic>> expenseDetails =
-              snapshot.data![4] as List<Map<String, dynamic>>;
+        child: RefreshIndicator(
+          onRefresh: () async {
+            setState(() {}); // Trigger UI refresh by reloading data
+          },
+          child: FutureBuilder(
+            future: Future.wait([
+              getUserData(),
+              getTotalAmount('income'),
+              getTotalAmount('expenses'),
+              getTransactionDetails('income'),
+              getTransactionDetails('expenses')
+            ]),
+            builder: (context, AsyncSnapshot<List<dynamic>> snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return const Center(child: CircularProgressIndicator());
+              } else if (snapshot.hasError) {
+                return Center(child: Text('Error: ${snapshot.error}'));
+              } else if (snapshot.hasData) {
+                var userData = snapshot.data![0] as Map<String, dynamic>;
+                double incomeTotal = snapshot.data![1] as double;
+                double expenseTotal = snapshot.data![2] as double;
+                List<Map<String, dynamic>> incomeDetails =
+                snapshot.data![3] as List<Map<String, dynamic>>;
+                List<Map<String, dynamic>> expenseDetails =
+                snapshot.data![4] as List<Map<String, dynamic>>;
 
-              // Combine Income and Expense for "ALL" Tab
-              List<Map<String, dynamic>> allDetails = [
-                ...incomeDetails,
-                ...expenseDetails
-              ];
+                // Combine Income and Expense for "ALL" Tab
+                List<Map<String, dynamic>> allDetails = [
+                  ...incomeDetails,
+                  ...expenseDetails
+                ];
 
-              // Determine which data to show based on the selected tab
-              List<Map<String, dynamic>> selectedDetails;
-              if (_selectedTab == 0) {
-                selectedDetails = allDetails;
-              } else if (_selectedTab == 1) {
-                selectedDetails = incomeDetails;
-              } else {
-                selectedDetails = expenseDetails;
-              }
+                // Determine which data to show based on the selected tab
+                List<Map<String, dynamic>> selectedDetails;
+                if (_selectedTab == 0) {
+                  selectedDetails = allDetails;
+                } else if (_selectedTab == 1) {
+                  selectedDetails = incomeDetails;
+                } else {
+                  selectedDetails = expenseDetails;
+                }
 
-              return SingleChildScrollView(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                return ListView(
                   children: [
                     // Header and Balance Section
                     Row(
@@ -135,8 +137,7 @@ class _MainScreenState extends State<MainScreen> {
                                   height: 40,
                                   decoration: BoxDecoration(
                                     shape: BoxShape.circle,
-                                    color:
-                                    Theme.of(context).colorScheme.secondary,
+                                    color: Theme.of(context).colorScheme.secondary,
                                   ),
                                 ),
                                 const Icon(Icons.person, color: Colors.white),
@@ -169,8 +170,7 @@ class _MainScreenState extends State<MainScreen> {
                           onPressed: () {
                             Get.to(() => ProfileScreen());
                           },
-                          icon:
-                          const Icon(Icons.settings, color: Colors.grey),
+                          icon: const Icon(Icons.settings, color: Colors.grey),
                         ),
                       ],
                     ),
@@ -201,8 +201,7 @@ class _MainScreenState extends State<MainScreen> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Row(
-                              mainAxisAlignment:
-                              MainAxisAlignment.spaceBetween,
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 const Text(
                                   'Total Balance',
@@ -211,10 +210,7 @@ class _MainScreenState extends State<MainScreen> {
                                     fontSize: 16,
                                   ),
                                 ),
-                                const Icon(
-                                  Icons.credit_card,
-                                  color: Colors.white,
-                                ),
+                                const Icon(Icons.credit_card, color: Colors.white),
                               ],
                             ),
                             Text(
@@ -226,15 +222,13 @@ class _MainScreenState extends State<MainScreen> {
                               ),
                             ),
                             Row(
-                              mainAxisAlignment:
-                              MainAxisAlignment.spaceBetween,
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 Column(
-                                  crossAxisAlignment:
-                                  CrossAxisAlignment.start,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     const Text(
-                                      'Income',
+                                      'Income (credit)',
                                       style: TextStyle(
                                         color: Colors.white70,
                                         fontSize: 12,
@@ -251,11 +245,10 @@ class _MainScreenState extends State<MainScreen> {
                                   ],
                                 ),
                                 Column(
-                                  crossAxisAlignment:
-                                  CrossAxisAlignment.start,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     const Text(
-                                      'Expenses',
+                                      'Expenses (debit)',
                                       style: TextStyle(
                                         color: Colors.white70,
                                         fontSize: 12,
@@ -291,6 +284,26 @@ class _MainScreenState extends State<MainScreen> {
                       ),
                     ),
                     const SizedBox(height: 16),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween, // Space between the items
+                      children: [
+                        const Text(
+                          'Particular',
+                          style: TextStyle(
+                            color: Colors.black,
+                            fontSize: 12,
+                          ),
+                        ),
+                        const Text(
+                          'Debit/Credit',
+                          style: TextStyle(
+                            color: Colors.black,
+                            fontSize: 12,
+                          ),
+                        ),
+                      ],
+                    ),
+
                     // Transaction List with Swipe-to-Delete
                     ...selectedDetails.map(
                           (transaction) => Dismissible(
@@ -311,11 +324,13 @@ class _MainScreenState extends State<MainScreen> {
                                   'Are you sure you want to delete this transaction?'),
                               actions: [
                                 TextButton(
-                                  onPressed: () => Navigator.of(context).pop(false),
+                                  onPressed: () =>
+                                      Navigator.of(context).pop(false),
                                   child: const Text('Cancel'),
                                 ),
                                 TextButton(
-                                  onPressed: () => Navigator.of(context).pop(true),
+                                  onPressed: () =>
+                                      Navigator.of(context).pop(true),
                                   child: const Text('Delete'),
                                 ),
                               ],
@@ -388,16 +403,17 @@ class _MainScreenState extends State<MainScreen> {
                       ),
                     ),
                   ],
-                ),
-              );
-            } else {
-              return const Center(child: Text('No data available.'));
-            }
-          },
+                );
+              } else {
+                return const Center(child: Text('No data available.'));
+              }
+            },
+          ),
         ),
       ),
     );
   }
+
 
   Widget _buildTabButton(int index, String label) {
     return GestureDetector(

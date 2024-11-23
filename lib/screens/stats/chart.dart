@@ -100,11 +100,14 @@ class _PieChartScreenState extends State<PieChartScreen> {
           const SizedBox(height: 20),
           Text(
             "Total Income: \Rs. ${totalIncome.toStringAsFixed(2)}",
-            style: const TextStyle(fontSize: 16),
+            style: const TextStyle(fontSize: 16,
+            color: Colors.green),
+
           ),
           Text(
             "Total Expense: \Rs. ${totalExpense.toStringAsFixed(2)}",
-            style: const TextStyle(fontSize: 16),
+            style: const TextStyle(fontSize: 16,
+                color: Colors.red),
           ),
           const SizedBox(height: 20),
           Expanded(
