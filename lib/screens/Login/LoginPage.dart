@@ -67,28 +67,46 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Login'),
-        centerTitle: true,
-        elevation: 0,
-        backgroundColor: Colors.blueAccent,
-      ),
+
       body: Padding(
         padding: EdgeInsets.symmetric(horizontal: 24.0),
         child: SingleChildScrollView(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              // Title
-              Text(
-                'Welcome Back!',
-                style: TextStyle(
-                  fontSize: 28,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.blueAccent,
+              // Login Title (Centered)
+              SizedBox(height: 150), // Extra space above the heading
+              Center(
+                child: Column(
+                  children: [
+                    Align(
+                      alignment: Alignment.centerLeft,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start, // Align texts to the left
+                        children: [
+                          Text(
+                            'Login',
+                            style: TextStyle(
+                              fontSize: 32,
+                              fontWeight: FontWeight.bold,
+                                color: Color(0xFF131313),
+                            ),
+                          ),
+                          SizedBox(height: 8), // Space between the title and subtitle
+                          Text(
+                            'Welcome back to the app',
+                            style: TextStyle(
+                              fontSize: 16,
+                              color: Colors.grey,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
                 ),
               ),
-              SizedBox(height: 40),
+              SizedBox(height: 40), // Extra spacing after title
 
               // Form for email and password
               Form(
@@ -101,22 +119,35 @@ class _LoginPageState extends State<LoginPage> {
                       controller: _emailController,
                       decoration: InputDecoration(
                         labelText: 'Email',
+                        labelStyle: TextStyle(color: Colors.black.withOpacity(0.7)), // Semi-black label color
                         prefixIcon: Icon(Icons.email),
-                        border: OutlineInputBorder(),
-                        filled: true,
-                        fillColor: Colors.grey[200],
+                        border: OutlineInputBorder(
+                          borderSide: BorderSide(color: Colors.black), // Black border
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderSide: BorderSide(color: Colors.black), // Black border when the field is not focused
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderSide: BorderSide(color: Colors.black), // Black border when the field is focused
+                        ),
+                        filled: true, // Ensures background color is applied
+                        fillColor: Colors.white, // White background
                       ),
+                      style: TextStyle(color: Colors.black), // Text color inside the field
                       keyboardType: TextInputType.emailAddress,
                       validator: (value) {
                         if (value == null || value.isEmpty) {
                           return 'Please enter an email address';
                         }
-                        if (!RegExp(r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$").hasMatch(value)) {
+                        if (!RegExp(
+                            r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$")
+                            .hasMatch(value)) {
                           return 'Enter a valid email';
                         }
                         return null;
                       },
                     ),
+
                     SizedBox(height: 16),
 
                     // Password TextField
@@ -124,44 +155,55 @@ class _LoginPageState extends State<LoginPage> {
                       controller: _passwordController,
                       decoration: InputDecoration(
                         labelText: 'Password',
+                        labelStyle: TextStyle(color: Colors.black.withOpacity(0.7)), // Semi-black label color
                         prefixIcon: Icon(Icons.lock),
-                        border: OutlineInputBorder(),
-                        filled: true,
-                        fillColor: Colors.grey[200],
+                        border: OutlineInputBorder(
+                          borderSide: BorderSide(color: Colors.black),
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderSide: BorderSide(color: Colors.black),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderSide: BorderSide(color: Colors.black),
+                        ),
+                        filled: true, // Ensures background color is applied
+                        fillColor: Colors.white, // White background
                       ),
-                      obscureText: true,
+                      obscureText: true, // Hide the password text
+                      style: TextStyle(color: Colors.black), // Text color inside the field
                       validator: (value) {
                         if (value == null || value.isEmpty) {
                           return 'Please enter your password';
                         }
                         return null;
                       },
-                    ),
+                    )
+                    ,
                     SizedBox(height: 20),
 
                     // Login Button
                     _isLoading
-                        ? Center(child: CircularProgressIndicator()) // Show loading spinner
+                        ? Center(
+                        child: CircularProgressIndicator()) // Show loading spinner
                         : ElevatedButton(
                       onPressed: _login,
                       style: ElevatedButton.styleFrom(
-                        padding: EdgeInsets.symmetric(vertical: 16),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        backgroundColor: Colors.blueAccent,
+                        backgroundColor: Colors
+                            .blue, // Set the background color to blue
                       ),
                       child: Text(
                         'Login',
-                        style: TextStyle(fontSize: 18),
+                        style: TextStyle(color: Colors.white),
                       ),
                     ),
+
                     SizedBox(height: 20),
 
                     // Forgot password link
                     TextButton(
                       onPressed: _forgotPassword,
-                      child: Text('Forgot Password?', style: TextStyle(color: Colors.blueAccent)),
+                      child: Text('Forgot Password?',
+                          style: TextStyle(color: Colors.blueAccent)),
                     ),
                   ],
                 ),
@@ -172,7 +214,8 @@ class _LoginPageState extends State<LoginPage> {
                 onPressed: () {
                   Get.to(() => SignUpPage());
                 },
-                child: Text('Create a New Account', style: TextStyle(color: Colors.blueAccent)),
+                child: Text('Create a New Account',
+                    style: TextStyle(color: Colors.blueAccent)),
               ),
             ],
           ),
