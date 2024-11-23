@@ -1,4 +1,5 @@
 import 'package:expenses_tracker/screens/home/views/profile.dart';
+import 'package:expenses_tracker/screens/home/views/search_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -165,12 +166,25 @@ class _MainScreenState extends State<MainScreen> {
                             ),
                           ],
                         ),
-                        IconButton(
-                          onPressed: () {
-                            Get.to(() => ProfileScreen());
-                          },
-                          icon: const Icon(Icons.settings, color: Colors.grey),
-                        ),
+
+                        Row(
+                          mainAxisSize: MainAxisSize.min,  // Ensures the Row takes only the space it needs
+                          children: [
+                            IconButton(
+                              onPressed: () {
+                                Get.to(() => SearchScreen ());
+                              },
+                              icon: const Icon(Icons.search, color: Colors.grey),
+                            ),
+                            IconButton(
+                              onPressed: () {
+                                Get.to(() => ProfileScreen());
+                              },
+                              icon: const Icon(Icons.settings, color: Colors.grey),
+                            ),
+                          ],
+                        )
+
                       ],
                     ),
                     const SizedBox(height: 24),
