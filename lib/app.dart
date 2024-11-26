@@ -18,7 +18,7 @@ class MyApp extends StatelessWidget {
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
         debugShowCheckedModeBanner: false,
-      home: LoginPage(), // Directly navigate to LoginPage
+      home: const LoginPage(), // Directly navigate to LoginPage
     );
   }
 }

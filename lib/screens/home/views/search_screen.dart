@@ -4,14 +4,17 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 class SearchScreen extends StatefulWidget {
+  const SearchScreen({super.key});
+
   @override
   _SearchScreenState createState() => _SearchScreenState();
 }
 
 class _SearchScreenState extends State<SearchScreen> {
-  List<Map<String, dynamic>> _filteredExpenses = [];
+  List<Map<String, dynamic>> _filteredEntries = [];
   DateTime? _startDate;
   DateTime? _endDate;
+  String _selectedType = "Expenses"; // Default filter type
 
   @override
   Widget build(BuildContext context) {
@@ -23,8 +26,8 @@ class _SearchScreenState extends State<SearchScreen> {
         padding: const EdgeInsets.all(8.0),
         child: Column(
           children: [
-            Text(
-              "Search Using Date",
+            const Text(
+              "Search Using Date and Type",
               style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 32),
@@ -52,27 +55,81 @@ class _SearchScreenState extends State<SearchScreen> {
               ],
             ),
             const SizedBox(height: 20),
+            // Dropdown for selecting type
+            DropdownButton<String>(
+              value: _selectedType,
+              items: ["Income", "Expenses"]
+                  .map((type) => DropdownMenuItem(
+                value: type,
+                child: Text(type),
+              ))
+                  .toList(),
+              onChanged: (value) {
+                setState(() {
+                  _selectedType = value!;
+                });
+              },
+            ),
+            const SizedBox(height: 20),
             ElevatedButton(
-              onPressed: _searchExpenses,
+              onPressed: _searchEntries,
               child: const Text('Search'),
             ),
             const SizedBox(height: 20),
             Expanded(
-              child: _filteredExpenses.isEmpty
-                  ? const Center(child: Text("No results found."))
+              child: _filteredEntries.isEmpty
+                  ? const Center(child: Text("No results found.", style: TextStyle(fontSize: 18)))
                   : ListView.builder(
-                itemCount: _filteredExpenses.length,
+                itemCount: _filteredEntries.length,
                 itemBuilder: (context, index) {
-                  var expense = _filteredExpenses[index];
-                  return ListTile(
-                    title: Text(expense['note']),
-                    subtitle: Text(
-                      'Amount: Rs. ${expense['amount']} \nCategory: ${expense['category']} \nDate: ${_formatDate(expense['date'])}',
+                  var entry = _filteredEntries[index];
+                  return Card(
+                    elevation: 4, // Subtle shadow for each card
+                    margin: const EdgeInsets.symmetric(vertical: 8), // Vertical margin between items
+                    shape: RoundedRectangleBorder( // Rounded corners for the card
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.all(16.0), // Padding inside each card
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          // Note Text
+                          Text(
+                            entry['note'] ?? "No description", // Default text if note is empty
+                            style: const TextStyle(
+                              fontSize: 18, // Larger font size for title
+                              fontWeight: FontWeight.bold, // Bold title
+                              color: Colors.black87, // Darker color for text
+                            ),
+                          ),
+                          const SizedBox(height: 8), // Space between text
+                          // Amount Text
+                          Text(
+                            'Amount: Rs. ${entry['amount']}',
+                            style: const TextStyle(
+                              fontSize: 16, // Slightly smaller than the title
+                              color: Colors.black87, // Green color for amount
+                              fontWeight: FontWeight.w500, // Medium weight for the amount
+                            ),
+                          ),
+                          const SizedBox(height: 8), // Space between text
+                          // Date Text
+                          Text(
+                            'Date: ${_formatDate(entry['date'])}',
+                            style: TextStyle(
+                              fontSize: 14, // Smaller font size for date
+                              color: Colors.grey[600], // Lighter color for date
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   );
                 },
               ),
-            ),
+            )
+
           ],
         ),
       ),
@@ -114,99 +171,82 @@ class _SearchScreenState extends State<SearchScreen> {
     }
   }
 
-  // Search Expenses Function
-  Future<void> _searchExpenses() async {
+  // Search Entries Function
+  Future<void> _searchEntries() async {
     if (_startDate == null || _endDate == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Please select both start and end dates")),
+        const SnackBar(content: Text("Please select both start and end dates")),
       );
       return;
     }
 
     try {
       User? user = FirebaseAuth.instance.currentUser;
+
+      // Ensure user is logged in
       if (user == null) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text("User not logged in")),
-        );
+        print("User not logged in.");
         return;
       }
 
-      // Adjust the start and end dates to cover the entire day
-      DateTime adjustedStartDate = DateTime(_startDate!.year, _startDate!.month, _startDate!.day, 0, 0, 0);
-      DateTime adjustedEndDate = DateTime(_endDate!.year, _endDate!.month, _endDate!.day, 23, 59, 59);
+      // Adjust dates to cover the entire day
+      DateTime adjustedStartDate =
+      DateTime(_startDate!.year, _startDate!.month, _startDate!.day, 0, 0, 0);
+      DateTime adjustedEndDate =
+      DateTime(_endDate!.year, _endDate!.month, _endDate!.day, 23, 59, 59);
 
       Timestamp startTimestamp = Timestamp.fromDate(adjustedStartDate);
       Timestamp endTimestamp = Timestamp.fromDate(adjustedEndDate);
 
-      print("Adjusted Start Date: ${_formatDate(adjustedStartDate)} (Timestamp: $startTimestamp)");
-      print("Adjusted End Date: ${_formatDate(adjustedEndDate)} (Timestamp: $endTimestamp)");
+      // Debugging: Log query parameters
+      print("DEBUG: Query Parameters");
+      print("User ID: ${user.uid}");
+      print("Selected Type: $_selectedType");
+      print("Start Timestamp: $startTimestamp");
+      print("End Timestamp: $endTimestamp");
 
-      // Query Firestore for expenses
+      // Select the collection based on the dropdown value
+      String collectionName = _selectedType == 'Expenses' ? 'expenses' : 'income';
+
+      // Firestore query
       QuerySnapshot snapshot = await FirebaseFirestore.instance
-          .collection('expenses') // Query 'expenses' collection
-          .where('userId', isEqualTo: user.uid)
-          .where('createdAt', isGreaterThanOrEqualTo: startTimestamp)
-          .where('createdAt', isLessThanOrEqualTo: endTimestamp)
-          .orderBy('createdAt', descending: true)
+          .collection(collectionName)
+          .where('userId', isEqualTo: user.uid) // Filter by user ID
+          .where('createdAt', isGreaterThanOrEqualTo: startTimestamp) // Filter by start date
+          .where('createdAt', isLessThanOrEqualTo: endTimestamp) // Filter by end date
+          .orderBy('createdAt', descending: true) // Order by date
           .get();
 
+      print("Documents Found in $collectionName: ${snapshot.docs.length}");
+
       if (snapshot.docs.isEmpty) {
-        print("No expenses found for the selected dates.");
+        print("No data found for the selected filters in $collectionName.");
+      } else {
+        // Log document data
+        for (var doc in snapshot.docs) {
+          print("Document Data: ${doc.data()}");
+        }
       }
 
-      // Map the results
-      List<Map<String, dynamic>> expenses = snapshot.docs.map((doc) {
+      // Map the results into a list
+      List<Map<String, dynamic>> entries = snapshot.docs.map((doc) {
         return {
           'amount': doc['amount'],
           'note': doc['note'],
-          'date': doc['createdAt'].toDate(), // Convert Timestamp to DateTime
-          'category': doc['category'],
+          'date': doc['createdAt'].toDate(),
         };
       }).toList();
 
+      // Update the state with the filtered data
       setState(() {
-        _filteredExpenses = expenses;
+        _filteredEntries = entries;
       });
     } catch (e) {
+      print("Error during query: $e");
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text("Error fetching results: $e")),
       );
     }
-
-// In the ListView.builder, apply the style to the category
-    Expanded(
-      child: ListView.builder(
-        itemCount: _filteredExpenses.length,
-        itemBuilder: (context, index) {
-          var expense = _filteredExpenses[index];
-          return ListTile(
-            title: Text(expense['note']),
-            subtitle: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Amount: Rs. ${expense['amount']}',
-                  style: TextStyle(fontSize: 14),
-                ),
-                Text(
-                  'Category: ${expense['category']}',
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold, // Bold
-                    fontSize: 16, // Font size 16
-                  ),
-                ),
-                Text(
-                  'Date: ${_formatDate(expense['date'])}',
-                  style: TextStyle(fontSize: 14),
-                ),
-              ],
-            ),
-          );
-        },
-      ),
-    );
-
   }
 
 }

@@ -27,13 +27,23 @@ class _MainScreenState extends State<MainScreen> {
 
   Future<double> getTotalAmount(String collection) async {
     double total = 0.0;
-    QuerySnapshot snapshot =
-    await FirebaseFirestore.instance.collection(collection).get();
+    String userId = FirebaseAuth.instance.currentUser?.uid ?? '';
+
+    if (userId.isEmpty) {
+      throw Exception('User not authenticated');
+    }
+
+    QuerySnapshot snapshot = await FirebaseFirestore.instance
+        .collection(collection)
+        .where('userId', isEqualTo: userId) // Ensure we are only fetching the current user's data
+        .get();
+
     for (var doc in snapshot.docs) {
       total += doc['amount'];
     }
     return total;
   }
+
 
   Future<List<Map<String, dynamic>>> getTransactionDetails(String collection) async {
     String userId = FirebaseAuth.instance.currentUser?.uid ?? '';
@@ -68,6 +78,7 @@ class _MainScreenState extends State<MainScreen> {
 
     return transactions;
   }
+
 
 
   Future<void> deleteTransaction(String collection, String docId) async {
@@ -181,7 +192,7 @@ class _MainScreenState extends State<MainScreen> {
                           children: [
                             IconButton(
                               onPressed: () {
-                                Get.to(() => SearchScreen ());
+                                Get.to(() => const SearchScreen ());
                               },
                               icon: const Icon(Icons.search, color: Colors.grey),
                             ),
@@ -208,7 +219,7 @@ class _MainScreenState extends State<MainScreen> {
                           end: Alignment.bottomRight,
                         ),
                         borderRadius: BorderRadius.circular(16),
-                        boxShadow: [
+                        boxShadow: const [
                           BoxShadow(
                             color: Colors.black26,
                             blurRadius: 10,
@@ -222,17 +233,17 @@ class _MainScreenState extends State<MainScreen> {
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Row(
+                            const Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                const Text(
+                                Text(
                                   'Total Balance',
                                   style: TextStyle(
                                     color: Colors.white,
                                     fontSize: 16,
                                   ),
                                 ),
-                                const Icon(Icons.credit_card, color: Colors.white),
+                                Icon(Icons.credit_card, color: Colors.white),
                               ],
                             ),
                             Text(
@@ -306,10 +317,10 @@ class _MainScreenState extends State<MainScreen> {
                       ),
                     ),
                     const SizedBox(height: 16),
-                    Row(
+                    const Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween, // Space between the items
                       children: [
-                        const Text(
+                        Text(
                           'Particular',
                           style: TextStyle(
                             color: Colors.black,
@@ -318,14 +329,14 @@ class _MainScreenState extends State<MainScreen> {
                         ),
                         Row(
                           children: [
-                            const Text(
+                            Text(
                               'Credit/',
                               style: TextStyle(
                                 color: Colors.green,
                                 fontSize: 12,
                               ),
                             ),
-                            const Text(
+                            Text(
                               'Debit',
                               style: TextStyle(
                                 color: Colors.red,
@@ -406,7 +417,7 @@ class _MainScreenState extends State<MainScreen> {
                                 flex: 1,
                                 child: Center(
                                   child: Text(
-                                    '${(transaction['date'] as Timestamp).toDate().toString().split(' ')[0]}',
+                                    (transaction['date'] as Timestamp).toDate().toString().split(' ')[0],
                                     style: TextStyle(
                                       fontSize: 12.0,
                                       color: Colors.grey.shade600,

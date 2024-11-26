@@ -10,6 +10,8 @@ class ProfileScreen extends StatelessWidget {
   final TextEditingController phoneController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
 
+  ProfileScreen({super.key});
+
   @override
   Widget build(BuildContext context) {
     // Retrieve the current user ID from FirebaseAuth
@@ -19,9 +21,9 @@ class ProfileScreen extends StatelessWidget {
     if (userId == null) {
       return Scaffold(
         appBar: AppBar(
-          title: Text("Profile"),
+          title: const Text("Profile"),
         ),
-        body: Center(
+        body: const Center(
           child: Text("Error: User is not logged in."),
         ),
       );
@@ -32,12 +34,12 @@ class ProfileScreen extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text("Profile"),
+        title: const Text("Profile"),
       ),
       body: Obx(() {
         // Check if user data is loaded
         if (userController.userData.value.isEmpty) {
-          return Center(child: CircularProgressIndicator());
+          return const Center(child: CircularProgressIndicator());
         }
 
         // Populate controllers with user data
@@ -52,22 +54,22 @@ class ProfileScreen extends StatelessWidget {
             children: [
               TextField(
                 controller: usernameController,
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   labelText: "Username",
                   border: OutlineInputBorder(),
                 ),
               ),
-              SizedBox(height: 16),
+              const SizedBox(height: 16),
               TextField(
                 controller: phoneController,
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   labelText: "Phone",
                   border: OutlineInputBorder(),
                 ),
                 keyboardType: TextInputType.phone,
               ),
-              SizedBox(height: 16),
-              SizedBox(height: 32),
+              const SizedBox(height: 16),
+              const SizedBox(height: 32),
               Row(
                 children: [
                   Expanded(
@@ -79,12 +81,12 @@ class ProfileScreen extends StatelessWidget {
                           'phone': phoneController.text,
                         });
                       },
-                      child: Text("Save Changes"),
+                      child: const Text("Save Changes"),
                     ),
                   ),
                 ],
               ),
-              SizedBox(height: 16),
+              const SizedBox(height: 16),
               Row(
                 children: [
                   Expanded(
@@ -92,28 +94,28 @@ class ProfileScreen extends StatelessWidget {
                       onPressed: () {
                         Get.dialog(
                           AlertDialog(
-                            title: Text("Confirm Logout"),
-                            content: Text("Do you want to logout?"),
+                            title: const Text("Confirm Logout"),
+                            content: const Text("Do you want to logout?"),
                             actions: [
                               TextButton(
                                 onPressed: () => Get.back(),
-                                child: Text("Cancel"),
+                                child: const Text("Cancel"),
                               ),
                               ElevatedButton(
                         onPressed: () {
-                        Get.offAll(() => LoginPage());
+                        Get.offAll(() => const LoginPage());
                         },
-                                child: Text("Logout"),
+                                child: const Text("Logout"),
                               ),
                             ],
                           ),
                         );
                       },
-                      child: Text("Logout"),
                       style: OutlinedButton.styleFrom(
                         foregroundColor: Colors.red,
-                        side: BorderSide(color: Colors.red),
+                        side: const BorderSide(color: Colors.red),
                       ),
+                      child: const Text("Logout"),
                     ),
                   ),
                 ],

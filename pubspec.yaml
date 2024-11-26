@@ -60,6 +60,7 @@ dev_dependencies:
   fl_chart: ^0.69.0
   parallax: ^1.0.3
   get: ^4.6.6
+
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
 

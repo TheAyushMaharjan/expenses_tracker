@@ -5,6 +5,8 @@ import '../home/views/home_screen.dart'; // Import the HomeScreen (make sure you
 import 'SignUpPage.dart';
 
 class LoginPage extends StatefulWidget {
+  const LoginPage({super.key});
+
   @override
   _LoginPageState createState() => _LoginPageState();
 }
@@ -37,7 +39,7 @@ class _LoginPageState extends State<LoginPage> {
       );
 
       // On successful login, navigate to the HomeScreen
-      Get.off(() => HomeScreen());
+      Get.off(() => const HomeScreen());
     } catch (e) {
       // Handle error during login
       print('Error: $e');
@@ -69,14 +71,14 @@ class _LoginPageState extends State<LoginPage> {
     return Scaffold(
 
       body: Padding(
-        padding: EdgeInsets.symmetric(horizontal: 24.0),
+        padding: const EdgeInsets.symmetric(horizontal: 24.0),
         child: SingleChildScrollView(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               // Login Title (Centered)
-              SizedBox(height: 150), // Extra space above the heading
-              Center(
+              const SizedBox(height: 150), // Extra space above the heading
+              const Center(
                 child: Column(
                   children: [
                     Align(
@@ -106,7 +108,7 @@ class _LoginPageState extends State<LoginPage> {
                   ],
                 ),
               ),
-              SizedBox(height: 40), // Extra spacing after title
+              const SizedBox(height: 40), // Extra spacing after title
 
               // Form for email and password
               Form(
@@ -120,20 +122,20 @@ class _LoginPageState extends State<LoginPage> {
                       decoration: InputDecoration(
                         labelText: 'Email',
                         labelStyle: TextStyle(color: Colors.black.withOpacity(0.7)), // Semi-black label color
-                        prefixIcon: Icon(Icons.email),
-                        border: OutlineInputBorder(
+                        prefixIcon: const Icon(Icons.email),
+                        border: const OutlineInputBorder(
                           borderSide: BorderSide(color: Colors.black), // Black border
                         ),
-                        enabledBorder: OutlineInputBorder(
+                        enabledBorder: const OutlineInputBorder(
                           borderSide: BorderSide(color: Colors.black), // Black border when the field is not focused
                         ),
-                        focusedBorder: OutlineInputBorder(
+                        focusedBorder: const OutlineInputBorder(
                           borderSide: BorderSide(color: Colors.black), // Black border when the field is focused
                         ),
                         filled: true, // Ensures background color is applied
                         fillColor: Colors.white, // White background
                       ),
-                      style: TextStyle(color: Colors.black), // Text color inside the field
+                      style: const TextStyle(color: Colors.black), // Text color inside the field
                       keyboardType: TextInputType.emailAddress,
                       validator: (value) {
                         if (value == null || value.isEmpty) {
@@ -148,7 +150,7 @@ class _LoginPageState extends State<LoginPage> {
                       },
                     ),
 
-                    SizedBox(height: 16),
+                    const SizedBox(height: 16),
 
                     // Password TextField
                     TextFormField(
@@ -156,21 +158,21 @@ class _LoginPageState extends State<LoginPage> {
                       decoration: InputDecoration(
                         labelText: 'Password',
                         labelStyle: TextStyle(color: Colors.black.withOpacity(0.7)), // Semi-black label color
-                        prefixIcon: Icon(Icons.lock),
-                        border: OutlineInputBorder(
+                        prefixIcon: const Icon(Icons.lock),
+                        border: const OutlineInputBorder(
                           borderSide: BorderSide(color: Colors.black), 
                         ),
-                        enabledBorder: OutlineInputBorder(
+                        enabledBorder: const OutlineInputBorder(
                           borderSide: BorderSide(color: Colors.black), 
                         ),
-                        focusedBorder: OutlineInputBorder(
+                        focusedBorder: const OutlineInputBorder(
                           borderSide: BorderSide(color: Colors.black), 
                         ),
                         filled: true, // Ensures background color is applied
                         fillColor: Colors.white, // White background
                       ),
                       obscureText: true, // Hide the password text
-                      style: TextStyle(color: Colors.black), // Text color inside the field
+                      style: const TextStyle(color: Colors.black), // Text color inside the field
                       validator: (value) {
                         if (value == null || value.isEmpty) {
                           return 'Please enter your password';
@@ -179,11 +181,11 @@ class _LoginPageState extends State<LoginPage> {
                       },
                     )
                     ,
-                    SizedBox(height: 20),
+                    const SizedBox(height: 20),
 
                     // Login Button
                     _isLoading
-                        ? Center(
+                        ? const Center(
                         child: CircularProgressIndicator()) // Show loading spinner
                         : ElevatedButton(
                       onPressed: _login,
@@ -191,18 +193,18 @@ class _LoginPageState extends State<LoginPage> {
                         backgroundColor: Colors
                             .blue, // Set the background color to blue
                       ),
-                      child: Text(
+                      child: const Text(
                         'Login',
                         style: TextStyle(color: Colors.white),
                       ),
                     ),
 
-                    SizedBox(height: 20),
+                    const SizedBox(height: 20),
 
                     // Forgot password link
                     TextButton(
                       onPressed: _forgotPassword,
-                      child: Text('Forgot Password?',
+                      child: const Text('Forgot Password?',
                           style: TextStyle(color: Colors.blueAccent)),
                     ),
                   ],
@@ -212,9 +214,9 @@ class _LoginPageState extends State<LoginPage> {
               // Create a New Account button
               TextButton(
                 onPressed: () {
-                  Get.to(() => SignUpPage());
+                  Get.to(() => const SignUpPage());
                 },
-                child: Text('Create a New Account',
+                child: const Text('Create a New Account',
                     style: TextStyle(color: Colors.blueAccent)),
               ),
             ],
