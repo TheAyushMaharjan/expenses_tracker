@@ -5,6 +5,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:get/get.dart';
 
+import 'notificationScreen.dart';
+
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key});
 
@@ -192,7 +194,14 @@ class _MainScreenState extends State<MainScreen> {
                           children: [
                             IconButton(
                               onPressed: () {
-                                Get.to(() => const SearchScreen ());
+                                Get.to(() =>  const NotificationScreen());
+
+                              },
+                              icon: const Icon(Icons.notifications, color: Colors.grey),
+                            ),
+                            IconButton(
+                              onPressed: () {
+                                Get.to(() => const SearchScreen());
                               },
                               icon: const Icon(Icons.search, color: Colors.grey),
                             ),
@@ -204,6 +213,8 @@ class _MainScreenState extends State<MainScreen> {
                             ),
                           ],
                         )
+
+
 
                       ],
                     ),

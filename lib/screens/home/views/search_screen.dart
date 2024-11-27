@@ -106,13 +106,14 @@ class _SearchScreenState extends State<SearchScreen> {
                           const SizedBox(height: 8), // Space between text
                           // Amount Text
                           Text(
-                            'Amount: Rs. ${entry['amount']}',
+                            'Amount: Rs. ${entry['amount']}', // Ensure this displays correctly
                             style: const TextStyle(
-                              fontSize: 16, // Slightly smaller than the title
-                              color: Colors.black87, // Green color for amount
-                              fontWeight: FontWeight.w500, // Medium weight for the amount
+                              fontSize: 16,
+                              color: Colors.black87,
+                              fontWeight: FontWeight.w500,
                             ),
                           ),
+
                           const SizedBox(height: 8), // Space between text
                           // Date Text
                           Text(
@@ -156,14 +157,23 @@ class _SearchScreenState extends State<SearchScreen> {
     }
   }
 
-  // Select End Date
+// Select End Date
   Future<void> _selectEndDate(BuildContext context) async {
+    if (_startDate == null) {
+      // Show a warning or handle the case where start date is not selected
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please select a start date first.')),
+      );
+      return;
+    }
+
     DateTime? selectedDate = await showDatePicker(
       context: context,
       initialDate: DateTime.now(),
-      firstDate: DateTime(2000),
+      firstDate: _startDate!, // Ensure end date is not earlier than the start date
       lastDate: DateTime(2100),
     );
+
     if (selectedDate != null) {
       setState(() {
         _endDate = selectedDate;
@@ -183,61 +193,49 @@ class _SearchScreenState extends State<SearchScreen> {
     try {
       User? user = FirebaseAuth.instance.currentUser;
 
-      // Ensure user is logged in
       if (user == null) {
         print("User not logged in.");
         return;
       }
 
-      // Adjust dates to cover the entire day
-      DateTime adjustedStartDate =
-      DateTime(_startDate!.year, _startDate!.month, _startDate!.day, 0, 0, 0);
-      DateTime adjustedEndDate =
-      DateTime(_endDate!.year, _endDate!.month, _endDate!.day, 23, 59, 59);
+      // Convert the selected dates to match the Firestore format
+      String startDateString = DateFormat('yyyy/MM/dd').format(_startDate!);
+      String endDateString = DateFormat('yyyy/MM/dd').format(_endDate!);
 
-      Timestamp startTimestamp = Timestamp.fromDate(adjustedStartDate);
-      Timestamp endTimestamp = Timestamp.fromDate(adjustedEndDate);
+      print("Start Date (Formatted): $startDateString");
+      print("End Date (Formatted): $endDateString");
 
-      // Debugging: Log query parameters
-      print("DEBUG: Query Parameters");
-      print("User ID: ${user.uid}");
-      print("Selected Type: $_selectedType");
-      print("Start Timestamp: $startTimestamp");
-      print("End Timestamp: $endTimestamp");
-
-      // Select the collection based on the dropdown value
       String collectionName = _selectedType == 'Expenses' ? 'expenses' : 'income';
 
-      // Firestore query
+      // Query the collection using the corrected date format
       QuerySnapshot snapshot = await FirebaseFirestore.instance
           .collection(collectionName)
-          .where('userId', isEqualTo: user.uid) // Filter by user ID
-          .where('createdAt', isGreaterThanOrEqualTo: startTimestamp) // Filter by start date
-          .where('createdAt', isLessThanOrEqualTo: endTimestamp) // Filter by end date
-          .orderBy('createdAt', descending: true) // Order by date
+          .where('userId', isEqualTo: user.uid)
+          .where('date', isGreaterThanOrEqualTo: startDateString)
+          .where('date', isLessThanOrEqualTo: endDateString)
+          .orderBy('date', descending: true)
           .get();
 
-      print("Documents Found in $collectionName: ${snapshot.docs.length}");
+      print("Found ${snapshot.docs.length} documents in $collectionName");
 
       if (snapshot.docs.isEmpty) {
-        print("No data found for the selected filters in $collectionName.");
-      } else {
-        // Log document data
-        for (var doc in snapshot.docs) {
-          print("Document Data: ${doc.data()}");
-        }
+        print("No data found.");
       }
 
-      // Map the results into a list
       List<Map<String, dynamic>> entries = snapshot.docs.map((doc) {
+        String dateString = doc['date'];
+
+        // Convert the date string to DateTime using the known format
+        DateTime date = DateFormat('yyyy/MM/dd').parse(dateString);
+
         return {
           'amount': doc['amount'],
           'note': doc['note'],
-          'date': doc['createdAt'].toDate(),
+          'date': date, // Use the parsed DateTime object here
         };
       }).toList();
 
-      // Update the state with the filtered data
+
       setState(() {
         _filteredEntries = entries;
       });
@@ -248,5 +246,8 @@ class _SearchScreenState extends State<SearchScreen> {
       );
     }
   }
+
+
+
 
 }

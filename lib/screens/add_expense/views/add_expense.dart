@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:cloud_firestore/cloud_firestore.dart'; // Import Firestore
 import 'package:firebase_auth/firebase_auth.dart'; // Import Firebase Auth
+import 'package:flutter/services.dart';
 
 class AddExpense extends StatefulWidget {
   const AddExpense({super.key});
@@ -187,6 +188,20 @@ class _AddExpenseState extends State<AddExpense> {
                     color: Colors.black,
                   ),
                   keyboardType: TextInputType.number,
+                  inputFormatters: [
+                    FilteringTextInputFormatter.digitsOnly, // Allow only digits
+                    LengthLimitingTextInputFormatter(9), // Limit to 9 digits
+                  ],
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Please enter an amount';
+                    }
+                    double? amount = double.tryParse(value);
+                    if (amount != null && amount < 0) {
+                      return 'Amount cannot be negative';
+                    }
+                    return null;
+                  },
                 ),
                 const SizedBox(height: 16.0),
 
@@ -224,6 +239,9 @@ class _AddExpenseState extends State<AddExpense> {
                     fontSize: 16.0,
                     color: Colors.black,
                   ),
+                  inputFormatters: [
+                    FilteringTextInputFormatter.allow(RegExp('[a-zA-Z ]')), // Only letters and spaces
+                  ],
                 ),
                 const SizedBox(height: 16.0),
 
@@ -261,6 +279,9 @@ class _AddExpenseState extends State<AddExpense> {
                     fontSize: 16.0,
                     color: Colors.black,
                   ),
+                  inputFormatters: [
+                    FilteringTextInputFormatter.allow(RegExp('[a-zA-Z ]')), // Only letters and spaces
+                  ],
                 ),
                 const SizedBox(height: 16.0),
 
@@ -273,7 +294,7 @@ class _AddExpenseState extends State<AddExpense> {
                       context: context,
                       initialDate: selectDate,
                       firstDate: DateTime(2000),
-                      lastDate: DateTime(2100),
+                      lastDate: DateTime.now(), // Restrict selection to current date or past dates
                     );
                     if (picked != null) {
                       setState(() {
@@ -313,7 +334,8 @@ class _AddExpenseState extends State<AddExpense> {
                     fontSize: 16.0,
                     color: Colors.black,
                   ),
-                ),
+                )
+                ,
                 const SizedBox(height: 16.0),
 
                 // Save button
