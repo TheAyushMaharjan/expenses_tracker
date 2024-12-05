@@ -1,13 +1,16 @@
+import 'package:expenses_tracker/screens/home/views/popup.dart'; // Ensure this path is correct
 import 'package:expenses_tracker/screens/home/views/profile.dart';
 import 'package:expenses_tracker/screens/home/views/search_screen.dart';
+import 'package:expenses_tracker/screens/stats/limitsetter.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:get/get.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:expenses_tracker/screens/home/views/popup.dart';  // Ensure this path is correct
 
 import '../../stats/card.dart';
 import '../../stats/extra_widget.dart';
-import 'notificationScreen.dart';
 
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key});
@@ -18,7 +21,33 @@ class MainScreen extends StatefulWidget {
 
 class _MainScreenState extends State<MainScreen> {
   int _selectedTab = 0; // 0: ALL, 1: Income, 2: Expenses
+  int _currentLimit = 0;
 
+  @override
+  void initState() {
+    super.initState();
+    _loadLimit();
+  }
+
+  Future<void> _loadLimit() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      _currentLimit = prefs.getInt('expense_limit') ?? 0;
+    });
+  }
+
+  // Check if the expense exceeds the limit and show the popup
+  void _checkExpense(int amount, String note) {
+    if (amount > _currentLimit) {
+      LimitExceededPopup.show(context, note, amount); // Show the pop-up
+    }
+  }
+
+  // Add expense logic (this calls _checkExpense)
+  void _addExpense(int amount, String note) {
+    // Check if the expense exceeds the limit
+    _checkExpense(amount, note); // Ensure this is correctly triggering the pop-up
+  }
   Future<Map<String, dynamic>> getUserData() async {
     String userId = FirebaseAuth.instance.currentUser?.uid ?? '';
     if (userId.isEmpty) {
@@ -39,7 +68,7 @@ class _MainScreenState extends State<MainScreen> {
 
     QuerySnapshot snapshot = await FirebaseFirestore.instance
         .collection(collection)
-        .where('userId', isEqualTo: userId) // Ensure we are only fetching the current user's data
+        .where('userId', isEqualTo: userId)
         .get();
 
     for (var doc in snapshot.docs) {
@@ -47,6 +76,7 @@ class _MainScreenState extends State<MainScreen> {
     }
     return total;
   }
+
   Future<List<Map<String, dynamic>>> getTransactionDetails(String collection) async {
     String userId = FirebaseAuth.instance.currentUser?.uid ?? '';
 
@@ -63,11 +93,11 @@ class _MainScreenState extends State<MainScreen> {
       final data = doc.data() as Map<String, dynamic>;
 
       return {
-        'id': doc.id, // Document ID
-        'category': data.containsKey('category') ? data['category'] : 'Unknown', // Handle missing field
-        'note': data.containsKey('note') ? data['note'] : '', // Handle missing note
-        'date': data.containsKey('createdAt') ? data['createdAt'] : Timestamp.now(),
-        'amount': data.containsKey('amount') ? data['amount'] : 0.0,
+        'id': doc.id,
+        'category': data['category'] ?? 'Unknown',
+        'note': data['note'] ?? '',
+        'date': data['createdAt'] ?? Timestamp.now(),
+        'amount': data['amount'] ?? 0.0,
         'type': collection,
       };
     }).toList();
@@ -75,12 +105,11 @@ class _MainScreenState extends State<MainScreen> {
     transactions.sort((a, b) {
       DateTime dateA = (a['date'] as Timestamp).toDate();
       DateTime dateB = (b['date'] as Timestamp).toDate();
-      return dateB.compareTo(dateA); // Sort by recent date
+      return dateB.compareTo(dateA);
     });
 
     return transactions;
   }
-
 
   Future<void> deleteTransaction(String collection, String docId) async {
     try {
@@ -109,7 +138,7 @@ class _MainScreenState extends State<MainScreen> {
         padding: const EdgeInsets.symmetric(vertical: 24.0, horizontal: 24.0),
         child: RefreshIndicator(
           onRefresh: () async {
-            setState(() {}); // Trigger UI refresh by reloading data
+            setState(() {});
           },
           child: FutureBuilder(
             future: Future.wait([
@@ -128,105 +157,56 @@ class _MainScreenState extends State<MainScreen> {
                 var userData = snapshot.data![0] as Map<String, dynamic>;
                 double incomeTotal = snapshot.data![1] as double;
                 double expenseTotal = snapshot.data![2] as double;
-                List<Map<String, dynamic>> incomeDetails =
-                snapshot.data![3] as List<Map<String, dynamic>>;
-                List<Map<String, dynamic>> expenseDetails =
-                snapshot.data![4] as List<Map<String, dynamic>>;
+                List<Map<String, dynamic>> incomeDetails = snapshot.data![3];
+                List<Map<String, dynamic>> expenseDetails = snapshot.data![4];
 
                 List<Map<String, dynamic>> allDetails = [
                   ...incomeDetails,
                   ...expenseDetails
                 ];
 
-                List<Map<String, dynamic>> selectedDetails;
-                if (_selectedTab == 0) {
-                  selectedDetails = allDetails;
-                } else if (_selectedTab == 1) {
-                  selectedDetails = incomeDetails;
-                } else {
-                  selectedDetails = expenseDetails;
-                }
+                List<Map<String, dynamic>> selectedDetails =
+                _selectedTab == 0 ? allDetails : _selectedTab == 1 ? incomeDetails : expenseDetails;
 
                 return ListView(
                   children: [
-                    // Header Section
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Row(
                           children: [
-                            Stack(
-                              alignment: Alignment.center,
-                              children: [
-                                Container(
-                                  width: 40,
-                                  height: 40,
-                                  decoration: BoxDecoration(
-                                    shape: BoxShape.circle,
-                                    color: Theme.of(context).colorScheme.secondary,
-                                  ),
-                                ),
-                                const Icon(Icons.person, color: Colors.white),
-                              ],
-                            ),
+                            const Icon(Icons.person, size: 40),
                             const SizedBox(width: 12),
                             Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Text(
-                                  'Welcome,',
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.grey.shade700,
-                                  ),
-                                ),
-                                Text(
-                                  userData['username'],
-                                  style: const TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.black,
-                                    fontSize: 16,
-                                  ),
-                                ),
+                                Text('Welcome,', style: TextStyle(color: Colors.grey.shade700)),
+                                Text(userData['username'], style: const TextStyle(fontSize: 16)),
                               ],
                             ),
                           ],
                         ),
                         Row(
-                          mainAxisSize: MainAxisSize.min,
                           children: [
                             IconButton(
-                              onPressed: () {
-                                Get.to(() => const());
-                              },
-                              icon: const Icon(Icons.notifications, color: Colors.grey),
+                              onPressed: () => Get.to(() => const LimitSetter()),
+                              icon: const Icon(Icons.notifications),
                             ),
                             IconButton(
-                              onPressed: () {
-                                Get.to(() => const SearchScreen());
-                              },
-                              icon: const Icon(Icons.search, color: Colors.grey),
+                              onPressed: () => Get.to(() => const SearchScreen()),
+                              icon: const Icon(Icons.search),
                             ),
                             IconButton(
-                              onPressed: () {
-                                Get.to(() => ProfileScreen());
-                              },
-                              icon: const Icon(Icons.settings, color: Colors.grey),
+                              onPressed: () => Get.to(() => ProfileScreen()),
+                              icon: const Icon(Icons.settings),
                             ),
                           ],
-                        )
+                        ),
                       ],
                     ),
                     const SizedBox(height: 24),
-                    BalanceCard(
-                      incomeTotal: incomeTotal,
-                      expenseTotal: expenseTotal,
-                    ),
-
-
-
+                    BalanceCard(incomeTotal: incomeTotal, expenseTotal: expenseTotal),
                     const SizedBox(height: 16),
-                    // ExtraWidget Section
                     ExtraWidget(
                       selectedTab: _selectedTab,
                       onTabChange: _onTabChange,
