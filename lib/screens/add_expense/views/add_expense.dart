@@ -10,17 +10,31 @@ class AddExpense extends StatefulWidget {
   @override
   State<AddExpense> createState() => _AddExpenseState();
 }
-
 class _AddExpenseState extends State<AddExpense> {
   TextEditingController expenseController = TextEditingController();
   TextEditingController noteController = TextEditingController();
   TextEditingController dateController = TextEditingController();
-  TextEditingController categoryController = TextEditingController(); // Controller for category
+  TextEditingController categoryController = TextEditingController();
   DateTime selectDate = DateTime.now();
 
   // Dropdown for type (Expenses/Income)
   String selectedType = 'Expenses'; // Default selection
   List<String> types = ['Expenses', 'Income'];
+
+  // Dropdown for category (initialized with the first option in the list)
+  String selectedCategory = 'Food & Dining'; // Default category selection
+  List<String> categories = [
+    'Food & Dining',
+    'Transport',
+    'Housing',
+    'Entertainment',
+    'Health & Fitness',
+    'Shopping',
+    'Education',
+    'Bills & Subscriptions',
+    'Savings & Investments',
+    'Miscellaneous'
+  ];
 
   @override
   void initState() {
@@ -33,7 +47,7 @@ class _AddExpenseState extends State<AddExpense> {
     String amount = expenseController.text;
     String note = noteController.text;
     String date = dateController.text;
-    String category = categoryController.text;
+    String category = selectedCategory; // Use selected category
 
     // Validate input
     if (amount.isEmpty || note.isEmpty || date.isEmpty || category.isEmpty) {
@@ -45,7 +59,7 @@ class _AddExpenseState extends State<AddExpense> {
 
     // Get the current user's ID
     User? user = FirebaseAuth.instance.currentUser;
-    String? userId = user?.uid; // Get the user ID
+    String? userId = user?.uid;
 
     if (userId == null) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -60,7 +74,7 @@ class _AddExpenseState extends State<AddExpense> {
 
     try {
       await collection.add({
-        'userId': userId, // Add userId to the Firestore document
+        'userId': userId,
         'amount': double.parse(amount),
         'note': note,
         'date': date,
@@ -146,8 +160,7 @@ class _AddExpenseState extends State<AddExpense> {
                   ),
                 ),
                 const SizedBox(height: 16.0),
-
-                // Amount field
+                  //Amount field
                 TextFormField(
                   controller: expenseController,
                   decoration: InputDecoration(
@@ -245,16 +258,24 @@ class _AddExpenseState extends State<AddExpense> {
                 ),
                 const SizedBox(height: 16.0),
 
-                // Category field
-                TextFormField(
-                  controller: categoryController,
+
+                // Category dropdown
+                DropdownButtonFormField<String>(
+                  value: selectedCategory, // Set the initial value to be a valid category
+                  onChanged: (value) {
+                    setState(() {
+                      selectedCategory = value!;
+                    });
+                  },
+                  items: categories.map((String category) {
+                    return DropdownMenuItem<String>(
+                      value: category,
+                      child: Text(category),
+                    );
+                  }).toList(),
                   decoration: InputDecoration(
                     fillColor: Colors.white,
                     filled: true,
-                    prefixIcon: Icon(
-                      Icons.category,
-                      color: Colors.grey[600],
-                    ),
                     contentPadding: const EdgeInsets.symmetric(
                         vertical: 16.0, horizontal: 20.0),
                     border: OutlineInputBorder(
@@ -269,19 +290,8 @@ class _AddExpenseState extends State<AddExpense> {
                       borderRadius: BorderRadius.circular(30),
                       borderSide: const BorderSide(color: Colors.blue),
                     ),
-                    hintText: 'Category',
-                    hintStyle: TextStyle(
-                      color: Colors.grey[400],
-                      fontSize: 16.0,
-                    ),
+                    hintText: 'Select Category',
                   ),
-                  style: const TextStyle(
-                    fontSize: 16.0,
-                    color: Colors.black,
-                  ),
-                  inputFormatters: [
-                    FilteringTextInputFormatter.allow(RegExp('[a-zA-Z ]')), // Only letters and spaces
-                  ],
                 ),
                 const SizedBox(height: 16.0),
 
@@ -343,7 +353,8 @@ class _AddExpenseState extends State<AddExpense> {
                   onPressed: saveData,
                   style: ElevatedButton.styleFrom(
                     padding: const EdgeInsets.symmetric(
-                        vertical: 12.0, horizontal: 60.0), backgroundColor: Colors.blue,
+                        vertical: 12.0, horizontal: 60.0),
+                    backgroundColor: Colors.blue,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(30),
                     ),
