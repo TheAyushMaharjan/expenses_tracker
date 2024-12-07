@@ -6,9 +6,6 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:get/get.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:expenses_tracker/screens/home/views/popup.dart';  // Ensure this path is correct
-
 import '../../stats/card.dart';
 import '../../stats/extra_widget.dart';
 
@@ -26,38 +23,46 @@ class _MainScreenState extends State<MainScreen> {
   @override
   void initState() {
     super.initState();
-    _loadLimit();
+    _loadLimitAndCheckExpenses();
   }
 
-  Future<void> _loadLimit() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    setState(() {
-      _currentLimit = prefs.getInt('expense_limit') ?? 0;
-    });
-  }
+  /// Load the limit from Firestore and check expenses
+  Future<void> _loadLimitAndCheckExpenses() async {
+    try {
+      // Fetch the user ID
+      String userId = FirebaseAuth.instance.currentUser?.uid ?? '';
+      if (userId.isEmpty) throw Exception('User not authenticated');
 
-  // Check if the expense exceeds the limit and show the popup
-  void _checkExpense(int amount, String note) {
-    if (amount > _currentLimit) {
-      LimitExceededPopup.show(context, note, amount); // Show the pop-up
+      // Fetch the limit from Firestore
+      DocumentSnapshot limitSnapshot = await FirebaseFirestore.instance
+          .collection('limits')
+          .doc(userId)
+          .get();
+
+      if (limitSnapshot.exists) {
+        int limit = limitSnapshot['expense_limit'] ?? 0;
+
+        setState(() {
+          _currentLimit = limit;
+        });
+
+        // Fetch total expenses
+        double totalExpenses = await getTotalAmount('expenses');
+
+        // Check if total expenses exceed the limit
+        if (totalExpenses > limit) {
+          LimitExceededPopup.show(
+              context, 'Total Expenses', totalExpenses.toInt());
+        }
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error loading limit or expenses: $e')),
+      );
     }
   }
 
-  // Add expense logic (this calls _checkExpense)
-  void _addExpense(int amount, String note) {
-    // Check if the expense exceeds the limit
-    _checkExpense(amount, note); // Ensure this is correctly triggering the pop-up
-  }
-  Future<Map<String, dynamic>> getUserData() async {
-    String userId = FirebaseAuth.instance.currentUser?.uid ?? '';
-    if (userId.isEmpty) {
-      throw Exception('User not authenticated');
-    }
-    DocumentSnapshot userDoc =
-    await FirebaseFirestore.instance.collection('Users').doc(userId).get();
-    return userDoc.data() as Map<String, dynamic>;
-  }
-
+  /// Get the total amount for a collection (e.g., income or expenses)
   Future<double> getTotalAmount(String collection) async {
     double total = 0.0;
     String userId = FirebaseAuth.instance.currentUser?.uid ?? '';
@@ -75,6 +80,29 @@ class _MainScreenState extends State<MainScreen> {
       total += doc['amount'];
     }
     return total;
+  }
+
+  /// Check if the expense exceeds the limit and show the popup
+  void _checkExpense(int amount, String note) {
+    if (amount > _currentLimit) {
+      LimitExceededPopup.show(context, note, amount); // Show the pop-up
+    }
+  }
+
+  /// Add expense logic (this calls _checkExpense)
+  void _addExpense(int amount, String note) {
+    // Check if the expense exceeds the limit
+    _checkExpense(amount, note);
+  }
+
+  Future<Map<String, dynamic>> getUserData() async {
+    String userId = FirebaseAuth.instance.currentUser?.uid ?? '';
+    if (userId.isEmpty) {
+      throw Exception('User not authenticated');
+    }
+    DocumentSnapshot userDoc =
+    await FirebaseFirestore.instance.collection('Users').doc(userId).get();
+    return userDoc.data() as Map<String, dynamic>;
   }
 
   Future<List<Map<String, dynamic>>> getTransactionDetails(String collection) async {
@@ -138,7 +166,7 @@ class _MainScreenState extends State<MainScreen> {
         padding: const EdgeInsets.symmetric(vertical: 24.0, horizontal: 24.0),
         child: RefreshIndicator(
           onRefresh: () async {
-            setState(() {});
+            await _loadLimitAndCheckExpenses();
           },
           child: FutureBuilder(
             future: Future.wait([
@@ -166,7 +194,11 @@ class _MainScreenState extends State<MainScreen> {
                 ];
 
                 List<Map<String, dynamic>> selectedDetails =
-                _selectedTab == 0 ? allDetails : _selectedTab == 1 ? incomeDetails : expenseDetails;
+                _selectedTab == 0
+                    ? allDetails
+                    : _selectedTab == 1
+                    ? incomeDetails
+                    : expenseDetails;
 
                 return ListView(
                   children: [
@@ -180,8 +212,11 @@ class _MainScreenState extends State<MainScreen> {
                             Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Text('Welcome,', style: TextStyle(color: Colors.grey.shade700)),
-                                Text(userData['username'], style: const TextStyle(fontSize: 16)),
+                                Text('Welcome,',
+                                    style:
+                                    TextStyle(color: Colors.grey.shade700)),
+                                Text(userData['username'],
+                                    style: const TextStyle(fontSize: 16)),
                               ],
                             ),
                           ],
@@ -205,7 +240,8 @@ class _MainScreenState extends State<MainScreen> {
                       ],
                     ),
                     const SizedBox(height: 24),
-                    BalanceCard(incomeTotal: incomeTotal, expenseTotal: expenseTotal),
+                    BalanceCard(
+                        incomeTotal: incomeTotal, expenseTotal: expenseTotal),
                     const SizedBox(height: 16),
                     ExtraWidget(
                       selectedTab: _selectedTab,
