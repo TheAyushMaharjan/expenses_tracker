@@ -42,14 +42,12 @@ class _AddExpenseState extends State<AddExpense> {
     super.initState();
   }
 
-  // Function to save data to Firebase
   Future<void> saveData() async {
     String amount = expenseController.text;
     String note = noteController.text;
     String date = dateController.text;
-    String category = selectedCategory; // Use selected category
+    String category = selectedCategory;
 
-    // Validate input
     if (amount.isEmpty || note.isEmpty || date.isEmpty || category.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text("Please fill in all fields")),
@@ -57,7 +55,6 @@ class _AddExpenseState extends State<AddExpense> {
       return;
     }
 
-    // Get the current user's ID
     User? user = FirebaseAuth.instance.currentUser;
     String? userId = user?.uid;
 
@@ -68,9 +65,8 @@ class _AddExpenseState extends State<AddExpense> {
       return;
     }
 
-    // Get reference to Firestore
     CollectionReference collection = FirebaseFirestore.instance
-        .collection(selectedType.toLowerCase()); // 'expenses' or 'income'
+        .collection(selectedType.toLowerCase());
 
     try {
       await collection.add({
@@ -86,10 +82,10 @@ class _AddExpenseState extends State<AddExpense> {
         SnackBar(content: Text("$selectedType added successfully")),
       );
 
-      // Clear fields after saving
+      Navigator.pop(context, {'type': selectedType, 'amount': double.parse(amount)});
+
       expenseController.clear();
       noteController.clear();
-      categoryController.clear();
       dateController.text = DateFormat('yyyy/MM/dd').format(DateTime.now());
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -97,6 +93,7 @@ class _AddExpenseState extends State<AddExpense> {
       );
     }
   }
+
 
   @override
   Widget build(BuildContext context) {

@@ -6,6 +6,7 @@ class ExtraWidget extends StatelessWidget {
   final Function(int) onTabChange;
   final List<Map<String, dynamic>> selectedDetails;
   final Function(String, String) deleteTransaction;
+  // final int currentLimit; // Add the currentLimit property
 
   const ExtraWidget({
     Key? key,
@@ -13,12 +14,30 @@ class ExtraWidget extends StatelessWidget {
     required this.onTabChange,
     required this.selectedDetails,
     required this.deleteTransaction,
+    // required this.currentLimit, // Pass the current limit value
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Column(
       children: [
+        // Limit display at the top
+        // Padding(
+        //   padding: const EdgeInsets.symmetric(vertical: 8.0),
+        //   child: Row(
+        //     children: [
+        //       const Text(
+        //         'Limit Set: ',
+        //         style: TextStyle(fontWeight: FontWeight.bold),
+        //       ),
+        //       Text(
+        //         'Rs. $currentLimit',
+        //         style: const TextStyle(fontWeight: FontWeight.bold),
+        //       ),
+        //     ],
+        //   ),
+        // ),
+        const SizedBox(height: 16),
         // Tab Section
         SingleChildScrollView(
           scrollDirection: Axis.horizontal,
@@ -45,7 +64,7 @@ class ExtraWidget extends StatelessWidget {
             Row(
               children: [
                 Text(
-                  'Credit/',
+                  'Credit/ ',
                   style: TextStyle(
                     color: Colors.green,
                     fontSize: 12,
@@ -82,13 +101,11 @@ class ExtraWidget extends StatelessWidget {
                       'Are you sure you want to delete this transaction?'),
                   actions: [
                     TextButton(
-                      onPressed: () =>
-                          Navigator.of(context).pop(false),
+                      onPressed: () => Navigator.of(context).pop(false),
                       child: const Text('Cancel'),
                     ),
                     TextButton(
-                      onPressed: () =>
-                          Navigator.of(context).pop(true),
+                      onPressed: () => Navigator.of(context).pop(true),
                       child: const Text('Delete'),
                     ),
                   ],
@@ -131,7 +148,10 @@ class ExtraWidget extends StatelessWidget {
                     flex: 1,
                     child: Center(
                       child: Text(
-                        (transaction['date'] as Timestamp).toDate().toString().split(' ')[0],
+                        (transaction['date'] as Timestamp)
+                            .toDate()
+                            .toString()
+                            .split(' ')[0],
                         style: TextStyle(
                           fontSize: 12.0,
                           color: Colors.grey.shade600,

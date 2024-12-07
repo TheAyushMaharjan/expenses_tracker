@@ -7,11 +7,11 @@ class LimitExceededPopup {
       builder: (BuildContext context) {
         return AlertDialog(
           title: const Text('Limit Exceeded'),
-          content: Text('Expense of amount \Rs.${amount} with note "$note" exceeds the set limit.'),
+          content: Text('Expense of amount \Rs.${amount} with exceeds the set limit.'),
           actions: <Widget>[
             TextButton(
               onPressed: () {
-                Navigator.of(context).pop(); // Close the pop-up
+                Navigator.of(context).pop(); //Close the pop-up
               },
               child: const Text('Close'),
             ),
