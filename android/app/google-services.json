@@ -1,13 +1,13 @@
 {
   "project_info": {
-    "project_number": "1079006650570",
-    "project_id": "newexp-56f06",
-    "storage_bucket": "newexp-56f06.firebasestorage.app"
+    "project_number": "829925318048",
+    "project_id": "money-43d41",
+    "storage_bucket": "money-43d41.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:1079006650570:android:8d82b036af3f3ad530d433",
+        "mobilesdk_app_id": "1:829925318048:android:81dad695b069ba2b1d98c5",
         "android_client_info": {
           "package_name": "com.example.expenses_tracker"
         }
@@ -15,7 +15,45 @@
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyALdO5WegBX4fNypxHTICaxZLNwX9KZ7YQ"
+          "current_key": "AIzaSyAD8iSrz9As0uacZV_3NQfpjkCzCOvMxyI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:829925318048:android:b11deed1a3dca5d51d98c5",
+        "android_client_info": {
+          "package_name": "com.example.flutter_expense_tracker_bloc"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAD8iSrz9As0uacZV_3NQfpjkCzCOvMxyI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:829925318048:android:0b70839ff28b468c1d98c5",
+        "android_client_info": {
+          "package_name": "com.ss.finances_tracker_app_ss_flutter"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAD8iSrz9As0uacZV_3NQfpjkCzCOvMxyI"
         }
       ],
       "services": {
