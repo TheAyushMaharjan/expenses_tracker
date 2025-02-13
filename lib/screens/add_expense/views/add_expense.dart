@@ -24,15 +24,8 @@ class _AddExpenseState extends State<AddExpense> {
   // Dropdown for category (initialized with the first option in the list)
   String selectedCategory = 'Food & Dining'; // Default category selection
   List<String> categories = [
-    'Food & Dining',
-    'Transport',
-    'Housing',
-    'Entertainment',
-    'Health & Fitness',
-    'Shopping',
-    'Education',
-    'Bills & Subscriptions',
-    'Savings & Investments',
+    'Food & Dining', 'Transport', 'Housing', 'Entertainment', 'Health & Fitness',
+    'Shopping', 'Education', 'Bills & Subscriptions', 'Savings & Investments',
     'Miscellaneous'
   ];
 
@@ -65,8 +58,8 @@ class _AddExpenseState extends State<AddExpense> {
       return;
     }
 
-    CollectionReference collection = FirebaseFirestore.instance
-        .collection(selectedType.toLowerCase());
+    CollectionReference collection =
+    FirebaseFirestore.instance.collection(selectedType.toLowerCase());
 
     try {
       await collection.add({
@@ -82,18 +75,14 @@ class _AddExpenseState extends State<AddExpense> {
         SnackBar(content: Text("$selectedType added successfully")),
       );
 
-      Navigator.pop(context, {'type': selectedType, 'amount': double.parse(amount)});
-
-      expenseController.clear();
-      noteController.clear();
-      dateController.text = DateFormat('yyyy/MM/dd').format(DateTime.now());
+      // Pop the screen and return true to indicate that a new transaction was added
+      Navigator.pop(context, true);
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text("Failed to add $selectedType: $e")),
       );
     }
   }
-
 
   @override
   Widget build(BuildContext context) {
