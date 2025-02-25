@@ -13,11 +13,20 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  var widgetList = [
-    const MainScreen(),
-    const PieChartScreen(),
-  ];
-  int index = 0;
+  late PageController _pageController;
+  int _currentIndex = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    _pageController = PageController(initialPage: 0);
+  }
+
+  @override
+  void dispose() {
+    _pageController.dispose();
+    super.dispose();
+  }
 
   Future<bool> _onWillPop() async {
     return await showDialog(
@@ -27,31 +36,47 @@ class _HomeScreenState extends State<HomeScreen> {
         content: const Text('Do you want to exit the app?'),
         actions: [
           TextButton(
-            onPressed: () => Navigator.of(context).pop(false), // Stay in app
+            onPressed: () => Navigator.of(context).pop(false),
             child: const Text('No'),
           ),
           TextButton(
-            onPressed: () => Navigator.of(context).pop(true), // Exit app
+            onPressed: () => Navigator.of(context).pop(true),
             child: const Text('Yes'),
           ),
         ],
       ),
     ) ??
-        false; // Default to false if dialog is dismissed
+        false;
+  }
+
+  void _navigateToAddExpense() async {
+    bool? isUpdated = await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (BuildContext context) => const AddExpense(),
+      ),
+    );
+
+    // If transaction added, refresh MainScreen
+    if (isUpdated == true) {
+      setState(() {});
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
-      onWillPop: _onWillPop, // Handle back button press
+      onWillPop: _onWillPop,
       child: Scaffold(
         bottomNavigationBar: ClipRRect(
           borderRadius: const BorderRadius.vertical(top: Radius.circular(30)),
           child: BottomNavigationBar(
-            onTap: (value) {
+            currentIndex: _currentIndex,
+            onTap: (index) {
               setState(() {
-                index = value;
+                _currentIndex = index;
               });
+              _pageController.jumpToPage(index);
             },
             backgroundColor: Colors.white,
             showSelectedLabels: false,
@@ -63,26 +88,26 @@ class _HomeScreenState extends State<HomeScreen> {
                 label: 'Home',
               ),
               BottomNavigationBarItem(
-                icon: Icon(CupertinoIcons.add_circled),
-                label: 'Expenses',
+                icon: Icon(CupertinoIcons.chart_pie),
+                label: 'Stats',
               ),
             ],
           ),
         ),
         floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
         floatingActionButton: FloatingActionButton(
-          onPressed: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (BuildContext context) => const AddExpense(),
-              ),
-            );
-          },
+          onPressed: _navigateToAddExpense,
           shape: const CircleBorder(),
           child: const Icon(CupertinoIcons.add),
         ),
-        body: widgetList[index], // Dynamically render the selected widget
+        body: PageView(
+          controller: _pageController,
+          physics: const NeverScrollableScrollPhysics(),
+          children: const [
+            MainScreen(),
+            PieChartScreen(),
+          ],
+        ),
       ),
     );
   }

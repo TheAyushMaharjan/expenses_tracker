@@ -1,13 +1,13 @@
-import 'package:expenses_tracker/screens/home/views/popup.dart'; // Ensure this path is correct
+import 'package:expenses_tracker/screens/home/views/popup.dart';
 import 'package:expenses_tracker/screens/home/views/profile.dart';
 import 'package:expenses_tracker/screens/home/views/search_screen.dart';
-import 'package:expenses_tracker/screens/stats/limitsetter.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:get/get.dart';
 import '../../stats/card.dart';
 import '../../stats/extra_widget.dart';
+import '../../stats/limitsetter.dart';
 
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key});
@@ -29,11 +29,9 @@ class _MainScreenState extends State<MainScreen> {
   /// Load the limit from Firestore and check expenses
   Future<void> _loadLimitAndCheckExpenses() async {
     try {
-      // Fetch the user ID
       String userId = FirebaseAuth.instance.currentUser?.uid ?? '';
       if (userId.isEmpty) throw Exception('User not authenticated');
 
-      // Fetch the limit from Firestore
       DocumentSnapshot limitSnapshot = await FirebaseFirestore.instance
           .collection('limits')
           .doc(userId)
@@ -46,10 +44,8 @@ class _MainScreenState extends State<MainScreen> {
           _currentLimit = limit;
         });
 
-        // Fetch total expenses
         double totalExpenses = await getTotalAmount('expenses');
 
-        // Check if total expenses exceed the limit
         if (totalExpenses > limit) {
           LimitExceededPopup.show(
               context, 'Total Expenses', totalExpenses.toInt());
@@ -80,19 +76,6 @@ class _MainScreenState extends State<MainScreen> {
       total += doc['amount'];
     }
     return total;
-  }
-
-  /// Check if the expense exceeds the limit and show the popup
-  void _checkExpense(int amount, String note) {
-    if (amount > _currentLimit) {
-      LimitExceededPopup.show(context, note, amount); // Show the pop-up
-    }
-  }
-
-  /// Add expense logic (this calls _checkExpense)
-  void _addExpense(int amount, String note) {
-    // Check if the expense exceeds the limit
-    _checkExpense(amount, note);
   }
 
   Future<Map<String, dynamic>> getUserData() async {
@@ -157,6 +140,30 @@ class _MainScreenState extends State<MainScreen> {
     setState(() {
       _selectedTab = newTab;
     });
+  }
+
+  /// Add a new transaction to Firestore (either income or expenses)
+  Future<void> addTransaction(String collection, Map<String, dynamic> transactionData) async {
+    try {
+      String userId = FirebaseAuth.instance.currentUser?.uid ?? '';
+      if (userId.isEmpty) throw Exception('User not authenticated');
+
+      // Add the transaction to Firestore
+      await FirebaseFirestore.instance.collection(collection).add(transactionData);
+
+      // Reload the entire screen
+      Get.off(() => const MainScreen());
+      Get.to(() => const MainScreen());
+
+      // Show success message
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Transaction added successfully!')),
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to add transaction: $e')),
+      );
+    }
   }
 
   @override

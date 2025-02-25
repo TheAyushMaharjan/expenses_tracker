@@ -50,19 +50,19 @@ class DefaultFirebaseOptions {
   }
 
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyALdO5WegBX4fNypxHTICaxZLNwX9KZ7YQ',
-    appId: '1:1079006650570:android:8d82b036af3f3ad530d433',
-    messagingSenderId: '1079006650570',
-    projectId: 'newexp-56f06',
-    storageBucket: 'newexp-56f06.firebasestorage.app',
+    apiKey: 'AIzaSyAD8iSrz9As0uacZV_3NQfpjkCzCOvMxyI',
+    appId: '1:829925318048:android:81dad695b069ba2b1d98c5',
+    messagingSenderId: '829925318048',
+    projectId: 'money-43d41',
+    storageBucket: 'money-43d41.firebasestorage.app',
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'AIzaSyDMZau6Zy2WKaz4YNLxsYFeQTVL22sjeL8',
-    appId: '1:1079006650570:ios:880f9adfc556390630d433',
-    messagingSenderId: '1079006650570',
-    projectId: 'newexp-56f06',
-    storageBucket: 'newexp-56f06.firebasestorage.app',
+    apiKey: 'AIzaSyA185-v01MNRQnc7tC09_JfkShpsr-ef0g',
+    appId: '1:829925318048:ios:cec854c8fd1e56c91d98c5',
+    messagingSenderId: '829925318048',
+    projectId: 'money-43d41',
+    storageBucket: 'money-43d41.firebasestorage.app',
     iosBundleId: 'com.example.expensesTracker',
   );
 }
